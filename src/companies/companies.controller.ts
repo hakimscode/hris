@@ -8,8 +8,10 @@ import {
   Param,
   NotFoundException,
   Patch,
-  Delete
+  Delete,
+  UseGuards
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -20,12 +22,14 @@ export class CompaniesController {
   constructor(private readonly companiesService: CompaniesService) {}
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   async getCompanies(@Res() res) {
     const companies = await this.companiesService.getCompanies();
     return res.status(HttpStatus.OK).json(companies);
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   async addCompanies(@Res() res, @Body() createCompanyDto: CreateCompanyDto) {
     const newCompany = await this.companiesService.addCompany(createCompanyDto);
     return res.status(HttpStatus.CREATED).json({
@@ -35,6 +39,7 @@ export class CompaniesController {
   }
 
   @Get(':companyId')
+  @UseGuards(AuthGuard('jwt'))
   async getCompany(@Res() res, @Param('companyId') companyId) {
     const company = await this.companiesService.getCompany(companyId);
     if (!company) {
@@ -44,6 +49,7 @@ export class CompaniesController {
   }
 
   @Patch(':companyId')
+  @UseGuards(AuthGuard('jwt'))
   async updateCompany(
     @Res() res,
     @Param('companyId') companyId,
@@ -63,6 +69,7 @@ export class CompaniesController {
   }
 
   @Delete(':companyId')
+  @UseGuards(AuthGuard('jwt'))
   async deleteCompany(@Res() res, @Param('companyId') companyId) {
     const deletedCompany = await this.companiesService.deleteCompany(companyId);
     if (!deletedCompany) {
