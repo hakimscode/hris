@@ -9,22 +9,20 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 @Injectable()
 export class CompaniesService {
   constructor(
-    @InjectModel('Company') private readonly companyModel: Model<Company>
+    @InjectModel('Company') private readonly CompanyModel: Model<Company>
   ) {}
 
   async getCompanies(): Promise<Company[]> {
-    const companies = await this.companyModel.find().exec();
+    const companies = await this.CompanyModel.find().exec();
     return companies;
   }
 
   async addCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
-    // eslint-disable-next-line new-cap
-    const newCompany = new this.companyModel(createCompanyDto);
-    return newCompany.save();
+    return new this.CompanyModel(createCompanyDto).save();
   }
 
   async getCompany(companyId: string): Promise<Company> {
-    const company = await this.companyModel.findById(companyId).exec();
+    const company = await this.CompanyModel.findById(companyId).exec();
     return company;
   }
 
@@ -32,7 +30,7 @@ export class CompaniesService {
     companyId: string,
     updateCompanyDto: UpdateCompanyDto
   ): Promise<Company> {
-    const updatedCompany = await this.companyModel.findByIdAndUpdate(
+    const updatedCompany = await this.CompanyModel.findByIdAndUpdate(
       companyId,
       updateCompanyDto,
       { new: true }
@@ -41,7 +39,7 @@ export class CompaniesService {
   }
 
   async deleteCompany(companyId: string): Promise<Company> {
-    const deletedCompany = await this.companyModel.findByIdAndRemove(companyId);
+    const deletedCompany = await this.CompanyModel.findByIdAndRemove(companyId);
     return deletedCompany;
   }
 }
