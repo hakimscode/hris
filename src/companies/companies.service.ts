@@ -1,7 +1,8 @@
 /* eslint-disable no-empty-function */
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ResponseDto } from '../shared/dto/response.dto';
 import { Company } from './interfaces/company.interface';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -12,34 +13,83 @@ export class CompaniesService {
     @InjectModel('Company') private readonly CompanyModel: Model<Company>
   ) {}
 
-  async getCompanies(): Promise<Company[]> {
-    const companies = await this.CompanyModel.find().exec();
-    return companies;
+  async getCompanies(): Promise<ResponseDto> {
+    const companies: Company[] = await this.CompanyModel.find().exec();
+
+    if (!companies.length) {
+      const response = new ResponseDto(
+        HttpStatus.NOT_FOUND,
+        'Company does not exist'
+      );
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return new ResponseDto(HttpStatus.OK, 'Companies Found', companies);
   }
 
-  async addCompany(createCompanyDto: CreateCompanyDto): Promise<Company> {
-    return new this.CompanyModel(createCompanyDto).save();
+  async addCompany(createCompanyDto: CreateCompanyDto): Promise<ResponseDto> {
+    const newCompany: Company = new this.CompanyModel(createCompanyDto);
+    await newCompany.save();
+    return new ResponseDto(
+      HttpStatus.CREATED,
+      'Company has been submitted successfully',
+      newCompany
+    );
   }
 
-  async getCompany(companyId: string): Promise<Company> {
+  async getCompany(companyId: string): Promise<ResponseDto> {
     const company = await this.CompanyModel.findById(companyId).exec();
-    return company;
+
+    if (!company) {
+      const response = new ResponseDto(
+        HttpStatus.NOT_FOUND,
+        'Company does not exist'
+      );
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return new ResponseDto(HttpStatus.OK, 'Company Found', company);
   }
 
   async updateCompany(
     companyId: string,
     updateCompanyDto: UpdateCompanyDto
-  ): Promise<Company> {
+  ): Promise<ResponseDto> {
     const updatedCompany = await this.CompanyModel.findByIdAndUpdate(
       companyId,
       updateCompanyDto,
       { new: true }
     );
-    return updatedCompany;
+
+    if (!updatedCompany) {
+      const response = new ResponseDto(
+        HttpStatus.NOT_FOUND,
+        'Company does not exist'
+      );
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return new ResponseDto(
+      HttpStatus.ACCEPTED,
+      'Company has been updated successfully',
+      updatedCompany
+    );
   }
 
-  async deleteCompany(companyId: string): Promise<Company> {
+  async deleteCompany(companyId: string): Promise<ResponseDto> {
     const deletedCompany = await this.CompanyModel.findByIdAndRemove(companyId);
-    return deletedCompany;
+
+    if (!deletedCompany) {
+      const response = new ResponseDto(
+        HttpStatus.NOT_FOUND,
+        'Company does not exist'
+      );
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return new ResponseDto(
+      HttpStatus.OK,
+      'Bonus has been deleted successfully'
+    );
   }
 }

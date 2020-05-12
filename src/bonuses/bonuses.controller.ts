@@ -2,13 +2,12 @@ import {
   Controller,
   Get,
   UseGuards,
-  Res,
-  HttpStatus,
   Post,
   Body,
   Param,
   Patch,
-  Delete
+  Delete,
+  HttpCode
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { BonusesService } from './bonuses.service';
@@ -22,52 +21,35 @@ export class BonusesController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async getBonuses(@Res() res) {
-    const bonuses = await this.bonusServices.getBonuses();
-    return res.status(HttpStatus.OK).json(bonuses);
+  async getBonuses() {
+    return this.bonusServices.getBonuses();
   }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async createBonus(@Res() res, @Body() createBonusDto: CreateBonusDto) {
-    const newBonus = await this.bonusServices.createBonus(createBonusDto);
-    return res.status(HttpStatus.CREATED).json({
-      message: 'Bonus has been submitted successfully',
-      bonus: newBonus
-    });
+  async createBonus(@Body() createBonusDto: CreateBonusDto) {
+    return this.bonusServices.createBonus(createBonusDto);
   }
 
   @Get(':bonusId')
   @UseGuards(AuthGuard('jwt'))
-  async getBonus(@Res() res, @Param('bonusId') bonusId: string) {
-    const bonus = await this.bonusServices.getBonus(bonusId);
-    return res.status(HttpStatus.OK).json(bonus);
+  async getBonus(@Param('bonusId') bonusId: string) {
+    return this.bonusServices.getBonus(bonusId);
   }
 
   @Patch(':bonusId')
   @UseGuards(AuthGuard('jwt'))
+  @HttpCode(202)
   async updateBonus(
-    @Res() res,
     @Param('bonusId') bonusId: string,
     @Body() updateBonusDto: UpdateBonusDto
   ) {
-    const updatedBonus = await this.bonusServices.updateBonus(
-      bonusId,
-      updateBonusDto
-    );
-    return res.status(HttpStatus.ACCEPTED).json({
-      message: 'Bonus has been updated successfully',
-      bonus: updatedBonus
-    });
+    return this.bonusServices.updateBonus(bonusId, updateBonusDto);
   }
 
   @Delete(':bonusId')
   @UseGuards(AuthGuard('jwt'))
-  async deleteBonus(@Res() res, @Param('bonusId') bonusId: string) {
-    const deletedBonus = await this.bonusServices.deleteBonus(bonusId);
-    return res.status(HttpStatus.OK).json({
-      message: 'Bonus has been deleted successfully',
-      bonus: deletedBonus
-    });
+  async deleteBonus(@Param('bonusId') bonusId: string) {
+    return this.bonusServices.deleteBonus(bonusId);
   }
 }

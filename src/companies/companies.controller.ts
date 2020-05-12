@@ -1,15 +1,13 @@
 import {
   Controller,
   Get,
-  Res,
-  HttpStatus,
   Post,
   Body,
   Param,
-  NotFoundException,
   Patch,
   Delete,
-  UseGuards
+  UseGuards,
+  HttpCode
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CompaniesService } from './companies.service';
@@ -23,61 +21,35 @@ export class CompaniesController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async getCompanies(@Res() res) {
-    const companies = await this.companiesService.getCompanies();
-    return res.status(HttpStatus.OK).json(companies);
+  async getCompanies() {
+    return this.companiesService.getCompanies();
   }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async addCompanies(@Res() res, @Body() createCompanyDto: CreateCompanyDto) {
-    const newCompany = await this.companiesService.addCompany(createCompanyDto);
-    return res.status(HttpStatus.CREATED).json({
-      message: 'Company has been submitted successfully',
-      company: newCompany
-    });
+  async addCompanies(@Body() createCompanyDto: CreateCompanyDto) {
+    return this.companiesService.addCompany(createCompanyDto);
   }
 
   @Get(':companyId')
   @UseGuards(AuthGuard('jwt'))
-  async getCompany(@Res() res, @Param('companyId') companyId) {
-    const company = await this.companiesService.getCompany(companyId);
-    if (!company) {
-      throw new NotFoundException('Company does not exist');
-    }
-    return res.status(HttpStatus.OK).json(company);
+  async getCompany(@Param('companyId') companyId: string) {
+    return this.companiesService.getCompany(companyId);
   }
 
   @Patch(':companyId')
   @UseGuards(AuthGuard('jwt'))
+  @HttpCode(202)
   async updateCompany(
-    @Res() res,
-    @Param('companyId') companyId,
+    @Param('companyId') companyId: string,
     @Body() updateCompanyDto: UpdateCompanyDto
   ) {
-    const updatedCompany = await this.companiesService.updateCompany(
-      companyId,
-      updateCompanyDto
-    );
-    if (!updatedCompany) {
-      throw new NotFoundException('Company does not exist');
-    }
-    return res.status(HttpStatus.ACCEPTED).json({
-      message: 'Company has been updated successfully',
-      company: updatedCompany
-    });
+    return this.companiesService.updateCompany(companyId, updateCompanyDto);
   }
 
   @Delete(':companyId')
   @UseGuards(AuthGuard('jwt'))
-  async deleteCompany(@Res() res, @Param('companyId') companyId) {
-    const deletedCompany = await this.companiesService.deleteCompany(companyId);
-    if (!deletedCompany) {
-      throw new NotFoundException('Company does not exist');
-    }
-    return res.status(HttpStatus.OK).json({
-      message: 'Company has been deleted successfully',
-      company: deletedCompany
-    });
+  async deleteCompany(@Param('companyId') companyId: string) {
+    return this.companiesService.deleteCompany(companyId);
   }
 }
