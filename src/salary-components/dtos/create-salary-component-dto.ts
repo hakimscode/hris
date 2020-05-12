@@ -1,9 +1,13 @@
 import { IsString, IsNotEmpty, IsNumber, IsBoolean } from 'class-validator';
 
-export class CreateBonusDto {
+export class CreateSalaryComponentDto {
   @IsString()
   @IsNotEmpty()
-  readonly bonusName: string;
+  readonly componentName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly componentType: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -12,4 +16,8 @@ export class CreateBonusDto {
   @IsBoolean()
   @IsNotEmpty()
   readonly decimalUnit: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  readonly isAdders: boolean;
 }
