@@ -6,6 +6,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { SalaryComponentsModule } from './salary-components/salary-components.module';
+import { EmployeesModule } from './employees/employees.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { SalaryComponentsModule } from './salary-components/salary-components.mo
     CompaniesModule,
     AuthModule,
     UsersModule,
-    SalaryComponentsModule
+    SalaryComponentsModule,
+    EmployeesModule
   ],
   controllers: [AppController],
   providers: [AppService]

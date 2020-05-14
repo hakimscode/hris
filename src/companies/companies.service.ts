@@ -38,7 +38,7 @@ export class CompaniesService {
   }
 
   async getCompany(companyId: string): Promise<ResponseDto> {
-    const company = await this.CompanyModel.findById(companyId).exec();
+    const company: Company = await this.CompanyModel.findById(companyId).exec();
 
     if (!company) {
       const response = new ResponseDto(
@@ -55,7 +55,7 @@ export class CompaniesService {
     companyId: string,
     updateCompanyDto: UpdateCompanyDto
   ): Promise<ResponseDto> {
-    const updatedCompany = await this.CompanyModel.findByIdAndUpdate(
+    const updatedCompany: Company = await this.CompanyModel.findByIdAndUpdate(
       companyId,
       updateCompanyDto,
       { new: true }
@@ -89,7 +89,7 @@ export class CompaniesService {
 
     return new ResponseDto(
       HttpStatus.OK,
-      'Bonus has been deleted successfully'
+      'Company has been deleted successfully'
     );
   }
 }
