@@ -6,6 +6,5 @@ export const EmployeeSchema = new mongoose.Schema({
   profile: Object,
   contact: Object,
   position: Object,
-  salary: Object,
-  login: Object
+  salary: Object
 });

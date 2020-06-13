@@ -25,8 +25,4 @@ export interface Employee extends Document {
     primarySalary: number;
     dailyAllowance: number;
   };
-  login: {
-    username: string;
-    password: string;
-  };
 }

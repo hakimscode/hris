@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { SalaryComponentsModule } from './salary-components/salary-components.module';
 import { EmployeesModule } from './employees/employees.module';
+import { AttendancesModule } from './attendances/attendances.module';
+import { PayrollsModule } from './payrolls/payrolls.module';
 
 @Module({
   imports: [
@@ -19,7 +21,9 @@ import { EmployeesModule } from './employees/employees.module';
     AuthModule,
     UsersModule,
     SalaryComponentsModule,
-    EmployeesModule
+    EmployeesModule,
+    AttendancesModule,
+    PayrollsModule
   ],
   controllers: [AppController],
   providers: [AppService]
