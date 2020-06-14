@@ -26,7 +26,12 @@ export class AuthService {
 
   async login(user: any) {
     // eslint-disable-next-line no-underscore-dangle
-    const payload = { sub: user._id, username: user.username };
+    const payload = {
+      // eslint-disable-next-line no-underscore-dangle
+      sub: user._id,
+      username: user.username,
+      userRole: user.userRole
+    };
     return {
       access_token: this.jwtService.sign(payload)
     };

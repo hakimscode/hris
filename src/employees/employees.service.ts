@@ -35,7 +35,7 @@ export class EmployeesService {
     const newUser = new this.UserModel({
       username,
       password: await HashPassword(password),
-      userRole: 'employee'
+      userRole: 'Employee'
     });
     await newUser.save();
 

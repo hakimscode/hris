@@ -11,6 +11,7 @@ import {
   HttpCode
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ACGuard, UseRoles } from 'nest-access-control';
 import { SalaryComponentsService } from './salary-components.service';
 import { CreateSalaryComponentDto } from './dtos/create-salary-component-dto';
 import { UpdateSalaryComponentDto } from './dtos/update-salary-component-dto';
@@ -22,13 +23,23 @@ export class SalaryComponentsController {
   ) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), ACGuard)
+  @UseRoles({
+    action: 'read',
+    possession: 'any',
+    resource: 'salaryComponent'
+  })
   async getSalaryComponents() {
     return this.SalaryComponentsServices.getSalaryComponents();
   }
 
   @Post()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), ACGuard)
+  @UseRoles({
+    action: 'create',
+    possession: 'any',
+    resource: 'salaryComponent'
+  })
   async createSalaryComponent(
     @Body() createSalaryComponentDto: CreateSalaryComponentDto
   ) {
@@ -38,7 +49,12 @@ export class SalaryComponentsController {
   }
 
   @Get(':SalaryComponentId')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), ACGuard)
+  @UseRoles({
+    action: 'read',
+    possession: 'any',
+    resource: 'salaryComponent'
+  })
   async getSalaryComponent(
     @Param('SalaryComponentId') SalaryComponentId: string
   ) {
@@ -46,7 +62,12 @@ export class SalaryComponentsController {
   }
 
   @Patch(':SalaryComponentId')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), ACGuard)
+  @UseRoles({
+    action: 'update',
+    possession: 'any',
+    resource: 'salaryComponent'
+  })
   @HttpCode(202)
   async updateSalaryComponent(
     @Param('SalaryComponentId') SalaryComponentId: string,
@@ -59,7 +80,12 @@ export class SalaryComponentsController {
   }
 
   @Delete(':SalaryComponentId')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), ACGuard)
+  @UseRoles({
+    action: 'delete',
+    possession: 'any',
+    resource: 'salaryComponent'
+  })
   async deleteSalaryComponent(
     @Param('SalaryComponentId') SalaryComponentId: string
   ) {
