@@ -1,0 +1,30 @@
+version: '3.7'
+
+networks:
+    hris_network:
+        name: hris_network
+
+services:
+    hris_db:
+        image: mongo:4.2.8
+        container_name: hris_db
+        restart: always
+        ports: 
+            - "27018:27017"
+        networks: 
+            - hris_network
+
+        
+    hris_server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        container_name: hris_server
+        ports:
+            - "5002:5001"
+        environment: 
+            - DB_HOST_HRIS=hris_db
+        depends_on: 
+            - hris_db
+        networks:
+            - hris_network

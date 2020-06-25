@@ -12,10 +12,12 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { PayrollsModule } from './payrolls/payrolls.module';
 import { roles } from './app.roles';
 
+const DB_HOST_HRIS = process.env.DB_HOST_HRIS ? process.env.DB_HOST_HRIS : "localhost";
+
 @Module({
   imports: [
     AccessControlModule.forRoles(roles),
-    MongooseModule.forRoot('mongodb://localhost:27017/hris', {
+    MongooseModule.forRoot(`mongodb://${DB_HOST_HRIS}:27017/hris`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false
