@@ -15,7 +15,7 @@ import { roles } from './app.roles';
 @Module({
   imports: [
     AccessControlModule.forRoles(roles),
-    MongooseModule.forRoot('mongodb://localhost:4040/hris', {
+    MongooseModule.forRoot('mongodb://localhost:27017/hris', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false
