@@ -1,0 +1,1 @@
+{"version":3,"file":"company.schema.js","sourceRoot":"","sources":["../../../src/companies/schemas/company.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,aAAa,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAC/C,IAAI,EAAE,MAAM;IACZ,KAAK,EAAE,MAAM;IACb,OAAO,EAAE,MAAM;CAChB,CAAC,CAAC"}

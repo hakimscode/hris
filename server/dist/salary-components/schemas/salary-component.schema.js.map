@@ -1,0 +1,1 @@
+{"version":3,"file":"salary-component.schema.js","sourceRoot":"","sources":["../../../src/salary-components/schemas/salary-component.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,qBAAqB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IACvD,aAAa,EAAE,MAAM;IACrB,aAAa,EAAE,MAAM;IACrB,MAAM,EAAE,MAAM;IACd,WAAW,EAAE,OAAO;IACpB,QAAQ,EAAE,OAAO;CAClB,CAAC,CAAC"}
