@@ -1,0 +1,13 @@
+.DS_Store
+.dockerignore
+.eslintignore
+.git
+.gitignore
+.lintstagedrc
+.npmrc
+.prettierrc
+build
+Dockerfile
+npm-debug.log
+node_modules
+README.md
