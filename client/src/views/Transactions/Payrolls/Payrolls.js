@@ -16,7 +16,7 @@ import {
 } from "reactstrap";
 import axios from "axios";
 
-class Pembelian extends Component {
+class Payrolls extends Component {
   constructor(props) {
     super(props);
 
@@ -324,4 +324,4 @@ class Pembelian extends Component {
   }
 }
 
-export default Pembelian;
+export default Payrolls;

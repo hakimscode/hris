@@ -17,7 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-class Projects extends Component {
+class Employees extends Component {
   constructor(props) {
     super(props);
 
@@ -221,4 +221,4 @@ class Projects extends Component {
   }
 }
 
-export default Projects;
+export default Employees;

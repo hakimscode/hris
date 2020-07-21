@@ -11,66 +11,60 @@ export default {
     },
     {
       title: true,
-      name: "Master",
-      wrapper: {
-        // optional wrapper object
-        element: "", // required valid HTML5 element tag
-        attributes: {} // optional valid JS object with JS API naming ex: { className: "my-class", style: { fontFamily: "Verdana" }, id: "my-id"}
-      },
-      class: "" // optional class names space delimited list for title item ex: "text-center"
+      name: "Master"
+    },
+    // {
+    //   name: "Perusahaan",
+    //   url: "/data/KategoriProduk",
+    //   icon: "icon-magic-wand"
+    // },
+    {
+      name: "Bonus",
+      url: "/master/bonuses",
+      icon: "icon-present"
     },
     {
-      name: "Kategori Produk",
-      url: "/data/KategoriProduk",
-      icon: "icon-magic-wand"
+      name: "Tunjangan",
+      url: "/master/allowances",
+      icon: "icon-envelope"
     },
     {
-      name: "Produk",
-      url: "/data/Produk",
-      icon: "icon-layers"
+      name: "Potongan",
+      url: "/master/deductions",
+      icon: "icon-tag"
     },
-    {
-      name: "Supplier",
-      url: "/data/Suppliers",
-      icon: "icon-plane"
-    },
-    {
-      name: "Customer",
-      url: "/data/Customers",
-      icon: "icon-people"
-    },
-    {
-      name: "Kandang",
-      url: "/data/Kandangs",
-      icon: "icon-home"
-    },
+    // {
+    //   name: "Kandang",
+    //   url: "/data/Kandangs",
+    //   icon: "icon-home"
+    // },
     {
       title: true,
       name: "Data"
     },
     {
-      name: "Gudang Telur",
-      url: "/data/GudangTelurs",
-      icon: "icon-social-dropbox"
+      name: "Perusahaan",
+      url: "/data/companies",
+      icon: "icon-badge"
     },
     {
-      name: "Project",
-      url: "/data/Projects",
-      icon: "icon-note"
+      name: "Pegawai",
+      url: "/data/employees",
+      icon: "icon-people"
     },
     {
       title: true,
       name: "Transaction"
     },
     {
-      name: "Pembelian",
-      url: "/transactions/Pembelian",
-      icon: "icon-basket"
+      name: "Payrolls",
+      url: "/transactions/payrolls",
+      icon: "icon-diamond"
     },
-    {
-      name: "Penjualan",
-      url: "/transactions/Penjualan",
-      icon: "icon-basket-loaded"
-    }
+    // {
+    //   name: "Penjualan",
+    //   url: "/transactions/Penjualan",
+    //   icon: "icon-basket-loaded"
+    // }
   ]
 };

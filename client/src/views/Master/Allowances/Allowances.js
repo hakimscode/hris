@@ -15,18 +15,18 @@ import {
 } from "reactstrap";
 import axios from "axios";
 
-class Customers extends Component {
+class Allowances extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5000/customers";
+    this.API_URL = "http://localhost:5000/suppliers";
     // this.API_URL = "https://api.fawwazlab.com/lapor/api/jenis_laporan";
 
     this.state = {
-      customers: [],
+      suppliers: [],
 
-      txt_customer_code: "",
-      txt_customer_name: "",
+      txt_supplier_code: "",
+      txt_supplier_name: "",
       txt_address: "",
       txt_id: "",
 
@@ -40,7 +40,7 @@ class Customers extends Component {
 
   componentDidMount() {
     axios.get(this.API_URL).then(res => {
-      this.setState({ customers: res.data.data });
+      this.setState({ suppliers: res.data.data });
     });
   }
 
@@ -50,25 +50,25 @@ class Customers extends Component {
     });
   };
 
-  editClick = customerId => {
-    axios.get(this.API_URL + "/" + customerId).then(res => {
+  editClick = supplierId => {
+    axios.get(this.API_URL + "/" + supplierId).then(res => {
       this.setState({
-        txt_id: customerId,
-        txt_customer_code: res.data.data.customer_code,
-        txt_customer_name: res.data.data.customer_name,
+        txt_id: supplierId,
+        txt_supplier_code: res.data.data.supplier_code,
+        txt_supplier_name: res.data.data.supplier_name,
         txt_address: res.data.data.address,
         value_simpan: "Edit"
       });
     });
   };
 
-  hapusClick = customerId => {
+  hapusClick = supplierId => {
     if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios.delete(this.API_URL + "/" + customerId).then(res => {
+      axios.delete(this.API_URL + "/" + supplierId).then(res => {
         this.setState({
-          customers: [
-            ...this.state.customers.filter(
-                customer => customer.id !== customerId
+          suppliers: [
+            ...this.state.suppliers.filter(
+                supplier => supplier.id !== supplierId
             )
           ]
         });
@@ -79,8 +79,8 @@ class Customers extends Component {
   cancelClick = () => {
     this.setState({
       txt_id: "",
-      txt_customer_code: "",
-      txt_customer_name: "",
+      txt_supplier_code: "",
+      txt_supplier_name: "",
       txt_address: "",
       value_simpan: "Simpan"
     });
@@ -91,14 +91,14 @@ class Customers extends Component {
     if (this.state.txt_id === "") {
       axios
         .post(this.API_URL, {
-          customer_code: this.state.txt_customer_code,
-          customer_name: this.state.txt_customer_name,
+          supplier_code: this.state.txt_supplier_code,
+          supplier_name: this.state.txt_supplier_name,
           address: this.state.txt_address
         })
         .then(res => {
           if (res.status === 201) {
             this.setState({
-                customers: [...this.state.customers, res.data.data]
+                suppliers: [...this.state.suppliers, res.data.data]
             });
             this.cancelClick();
           } else {
@@ -108,20 +108,20 @@ class Customers extends Component {
     } else {
       axios
         .put(this.API_URL + "/" + this.state.txt_id, {
-            customer_code: this.state.txt_customer_code,
-            customer_name: this.state.txt_customer_name,
+            supplier_code: this.state.txt_supplier_code,
+            supplier_name: this.state.txt_supplier_name,
             address: this.state.txt_address
         })
         .then(res => {
           if (res.status === 201) {
             this.setState({
-              customer: this.state.customers.map(customer => {
-                if (customer.id === res.data.data.id) {
-                  customer.customer_code = res.data.data.customer_code;
-                  customer.customer_name = res.data.data.customer_name;
-                  customer.address = res.data.data.address;
+              supplier: this.state.suppliers.map(supplier => {
+                if (supplier.id === res.data.data.id) {
+                  supplier.supplier_code = res.data.data.supplier_code;
+                  supplier.supplier_name = res.data.data.supplier_name;
+                  supplier.address = res.data.data.address;
                 }
-                return customer;
+                return supplier;
               })
             });
             this.cancelClick();
@@ -139,35 +139,35 @@ class Customers extends Component {
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Form Customer
+                <i className="fa fa-align-justify"></i> Form Supplier
               </CardHeader>
               <Form onSubmit={this.handleSubmit}>
                 <CardBody>
                   <FormGroup row>
                   <Col md="2">
-                      <Label htmlFor="nama-produk">Kode Customer</Label>
+                      <Label htmlFor="nama-produk">Kode Supplier</Label>
                     </Col>
                     <Col xs="4" md="4">
                       <Input
                         type="text"
-                        name="txt_customer_code"
+                        name="txt_supplier_code"
                         onChange={this.handleChange}
-                        value={this.state.txt_customer_code}
+                        value={this.state.txt_supplier_code}
                         required
-                        placeholder="Kode Customer"
+                        placeholder="Kode Supplier"
                       />
                     </Col>
                     <Col md="2">
-                      <Label htmlFor="nama-produk">Nama Customer</Label>
+                      <Label htmlFor="nama-produk">Nama Supplier</Label>
                     </Col>
                     <Col xs="4" md="4">
                       <Input
                         type="text"
-                        name="txt_customer_name"
+                        name="txt_supplier_name"
                         onChange={this.handleChange}
-                        value={this.state.txt_customer_name}
+                        value={this.state.txt_supplier_name}
                         required
-                        placeholder="Nama Customer"
+                        placeholder="Nama Supplier"
                       />
                     </Col>
                   </FormGroup>
@@ -203,33 +203,33 @@ class Customers extends Component {
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Data Customer
+                <i className="fa fa-align-justify"></i> Data Supplier
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Kode customer</th>
-                      <th>Nama customer</th>
+                      <th>Kode Supplier</th>
+                      <th>Nama Supplier</th>
                       <th>Alamat</th>
                       <th>#</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.customers.map((customer, index) => (
-                      <tr key={customer.id}>
+                    {this.state.suppliers.map((supplier, index) => (
+                      <tr key={supplier.id}>
                         <td>{index + 1}</td>
-                        <td>{customer.customer_code}</td>
-                        <td>{customer.customer_name}</td>
-                        <td>{customer.address}</td>
+                        <td>{supplier.supplier_code}</td>
+                        <td>{supplier.supplier_name}</td>
+                        <td>{supplier.address}</td>
                         <td>
                           <Button
                             size="sm"
                             color="danger"
                             className="mb-2 mr-1"
-                            id_kategori={customer.id}
-                            onClick={this.hapusClick.bind(this, customer.id)}
+                            id_kategori={supplier.id}
+                            onClick={this.hapusClick.bind(this, supplier.id)}
                           >
                             Hapus
                           </Button>
@@ -237,8 +237,8 @@ class Customers extends Component {
                             size="sm"
                             color="success"
                             className="mb-2 mr-1"
-                            id_kategori={customer.id}
-                            onClick={this.editClick.bind(this, customer.id)}
+                            id_kategori={supplier.id}
+                            onClick={this.editClick.bind(this, supplier.id)}
                           >
                             Edit
                           </Button>
@@ -256,4 +256,4 @@ class Customers extends Component {
   }
 }
 
-export default Customers;
+export default Allowances;

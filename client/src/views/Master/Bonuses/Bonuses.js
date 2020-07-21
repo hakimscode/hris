@@ -15,19 +15,20 @@ import {
 } from "reactstrap";
 import axios from "axios";
 
-class Suppliers extends Component {
+class Bonuses extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5000/suppliers";
+    this.API_URL = "http://localhost:5000/produk";
+    this.API_URL_KATEGORI = "http://localhost:5000/produk_kategori";
     // this.API_URL = "https://api.fawwazlab.com/lapor/api/jenis_laporan";
 
     this.state = {
-      suppliers: [],
-
-      txt_supplier_code: "",
-      txt_supplier_name: "",
-      txt_address: "",
+      produk: [],
+      arrKategori: [],
+      txt_kategori: "",
+      txt_nama_produk: "",
+      txt_satuan: "",
       txt_id: "",
 
       value_simpan: "Simpan"
@@ -40,8 +41,11 @@ class Suppliers extends Component {
 
   componentDidMount() {
     axios.get(this.API_URL).then(res => {
-      this.setState({ suppliers: res.data.data });
+      this.setState({ produk: res.data.data });
     });
+    axios.get(this.API_URL_KATEGORI).then(res => {
+      this.setState({arrKategori: res.data.data})
+    })
   }
 
   handleChange = e => {
@@ -50,25 +54,27 @@ class Suppliers extends Component {
     });
   };
 
-  editClick = supplierId => {
-    axios.get(this.API_URL + "/" + supplierId).then(res => {
+  editClick = id_produk => {
+    axios.get(this.API_URL + "/" + id_produk).then(res => {
       this.setState({
-        txt_id: supplierId,
-        txt_supplier_code: res.data.data.supplier_code,
-        txt_supplier_name: res.data.data.supplier_name,
-        txt_address: res.data.data.address,
+        txt_id: id_produk,
+        txt_kategori: res.data.data.produk_kategori.id,
+        txt_nama_produk: res.data.data.nama_produk,
+        txt_satuan: res.data.data.satuan,
         value_simpan: "Edit"
       });
     });
+    console.log(this.state.produk);
+    
   };
 
-  hapusClick = supplierId => {
+  hapusClick = id_produk => {
     if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios.delete(this.API_URL + "/" + supplierId).then(res => {
+      axios.delete(this.API_URL + "/" + id_produk).then(res => {
         this.setState({
-          suppliers: [
-            ...this.state.suppliers.filter(
-                supplier => supplier.id !== supplierId
+          produk: [
+            ...this.state.produk.filter(
+                produk => produk.id !== id_produk
             )
           ]
         });
@@ -79,9 +85,9 @@ class Suppliers extends Component {
   cancelClick = () => {
     this.setState({
       txt_id: "",
-      txt_supplier_code: "",
-      txt_supplier_name: "",
-      txt_address: "",
+      txt_kategori: "",
+      txt_nama_produk: "",
+      txt_satuan: "",
       value_simpan: "Simpan"
     });
   };
@@ -91,39 +97,46 @@ class Suppliers extends Component {
     if (this.state.txt_id === "") {
       axios
         .post(this.API_URL, {
-          supplier_code: this.state.txt_supplier_code,
-          supplier_name: this.state.txt_supplier_name,
-          address: this.state.txt_address
+          kategori_id: this.state.txt_kategori,
+          nama_produk: this.state.txt_nama_produk,
+          satuan: this.state.txt_satuan
         })
         .then(res => {
           if (res.status === 201) {
             this.setState({
-                suppliers: [...this.state.suppliers, res.data.data]
+              produk: [...this.state.produk, res.data.data]
             });
             this.cancelClick();
           } else {
             console.log("error");
           }
+        })
+        .catch(err => {
+          console.log(err.message);
         });
     } else {
       axios
         .put(this.API_URL + "/" + this.state.txt_id, {
-            supplier_code: this.state.txt_supplier_code,
-            supplier_name: this.state.txt_supplier_name,
-            address: this.state.txt_address
+          kategori_id: this.state.txt_kategori,
+          nama_produk: this.state.txt_nama_produk,
+          satuan: this.state.txt_satuan
         })
         .then(res => {
           if (res.status === 201) {
             this.setState({
-              supplier: this.state.suppliers.map(supplier => {
-                if (supplier.id === res.data.data.id) {
-                  supplier.supplier_code = res.data.data.supplier_code;
-                  supplier.supplier_name = res.data.data.supplier_name;
-                  supplier.address = res.data.data.address;
+              produk: this.state.produk.map(prod => {
+                if (prod.id === res.data.data.id) {
+                  prod.kategori_id = res.data.data.produk_kategori.id;
+                  prod.produk_kategori.id = res.data.data.produk_kategori.id;
+                  prod.produk_kategori.nama = res.data.data.produk_kategori.nama;
+                  prod.nama_produk = res.data.data.nama_produk;
+                  prod.satuan = res.data.data.satuan;
                 }
-                return supplier;
+                return prod;
               })
             });
+            console.log(this.state.produk);
+            
             this.cancelClick();
           } else {
             console.log("error");
@@ -136,53 +149,51 @@ class Suppliers extends Component {
     return (
       <div className="animated fadeIn">
         <Row>
-          <Col xs="12" lg="12">
+            <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Form Supplier
+                <i className="fa fa-align-justify"></i> Form Produk
               </CardHeader>
               <Form onSubmit={this.handleSubmit}>
                 <CardBody>
                   <FormGroup row>
-                  <Col md="2">
-                      <Label htmlFor="nama-produk">Kode Supplier</Label>
+                    <Col md="2">
+                      <Label htmlFor="kategori-produk">Kategori Produk</Label>
                     </Col>
                     <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_supplier_code"
-                        onChange={this.handleChange}
-                        value={this.state.txt_supplier_code}
-                        required
-                        placeholder="Kode Supplier"
-                      />
+                        <Input type="select" name="txt_kategori" id="kategori_produk" onChange={this.handleChange} value={this.state.txt_kategori} required>
+                            <option value="">pilih kategori produk</option>
+                            {this.state.arrKategori.map((kategori, index) => 
+                              <option key={index} value={kategori.id}>{kategori.nama}</option>
+                            )}
+                        </Input>
                     </Col>
                     <Col md="2">
-                      <Label htmlFor="nama-produk">Nama Supplier</Label>
+                      <Label htmlFor="nama-produk">Nama Produk</Label>
                     </Col>
                     <Col xs="4" md="4">
                       <Input
                         type="text"
-                        name="txt_supplier_name"
+                        name="txt_nama_produk"
                         onChange={this.handleChange}
-                        value={this.state.txt_supplier_name}
+                        value={this.state.txt_nama_produk}
                         required
-                        placeholder="Nama Supplier"
+                        placeholder="Nama Produk"
                       />
                     </Col>
                   </FormGroup>
                   <FormGroup row>
                     <Col md="2">
-                      <Label htmlFor="satuan-produk">Alamat</Label>
+                      <Label htmlFor="satuan-produk">Satuan Produk</Label>
                     </Col>
                     <Col xs="4" md="4">
                       <Input
                         type="text"
-                        name="txt_address"
+                        name="txt_satuan"
                         onChange={this.handleChange}
-                        value={this.state.txt_address}
+                        value={this.state.txt_satuan}
                         required
-                        placeholder="Alamat"
+                        placeholder="Satuan Produk"
                       />
                     </Col>
                   </FormGroup>
@@ -199,37 +210,36 @@ class Suppliers extends Component {
               </Form>
             </Card>
           </Col>
-          
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Data Supplier
+                <i className="fa fa-align-justify"></i> Data Produk
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Kode Supplier</th>
-                      <th>Nama Supplier</th>
-                      <th>Alamat</th>
+                      <th>Kategori Produk</th>
+                      <th>Produk</th>
+                      <th>Satuan</th>
                       <th>#</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.suppliers.map((supplier, index) => (
-                      <tr key={supplier.id}>
+                    {this.state.produk.map((row, index) => (
+                      <tr key={row.id}>
                         <td>{index + 1}</td>
-                        <td>{supplier.supplier_code}</td>
-                        <td>{supplier.supplier_name}</td>
-                        <td>{supplier.address}</td>
+                        <td>{row.produk_kategori.nama}</td>
+                        <td>{row.nama_produk}</td>
+                        <td>{row.satuan}</td>
                         <td>
                           <Button
                             size="sm"
                             color="danger"
                             className="mb-2 mr-1"
-                            id_kategori={supplier.id}
-                            onClick={this.hapusClick.bind(this, supplier.id)}
+                            id_kategori={row.id}
+                            onClick={this.hapusClick.bind(this, row.id)}
                           >
                             Hapus
                           </Button>
@@ -237,8 +247,8 @@ class Suppliers extends Component {
                             size="sm"
                             color="success"
                             className="mb-2 mr-1"
-                            id_kategori={supplier.id}
-                            onClick={this.editClick.bind(this, supplier.id)}
+                            id_kategori={row.id}
+                            onClick={this.editClick.bind(this, row.id)}
                           >
                             Edit
                           </Button>
@@ -256,4 +266,4 @@ class Suppliers extends Component {
   }
 }
 
-export default Suppliers;
+export default Bonuses;

@@ -15,20 +15,19 @@ import {
 } from "reactstrap";
 import axios from "axios";
 
-class Produk extends Component {
+class Deductions extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5000/produk";
-    this.API_URL_KATEGORI = "http://localhost:5000/produk_kategori";
+    this.API_URL = "http://localhost:5000/customers";
     // this.API_URL = "https://api.fawwazlab.com/lapor/api/jenis_laporan";
 
     this.state = {
-      produk: [],
-      arrKategori: [],
-      txt_kategori: "",
-      txt_nama_produk: "",
-      txt_satuan: "",
+      customers: [],
+
+      txt_customer_code: "",
+      txt_customer_name: "",
+      txt_address: "",
       txt_id: "",
 
       value_simpan: "Simpan"
@@ -41,11 +40,8 @@ class Produk extends Component {
 
   componentDidMount() {
     axios.get(this.API_URL).then(res => {
-      this.setState({ produk: res.data.data });
+      this.setState({ customers: res.data.data });
     });
-    axios.get(this.API_URL_KATEGORI).then(res => {
-      this.setState({arrKategori: res.data.data})
-    })
   }
 
   handleChange = e => {
@@ -54,27 +50,25 @@ class Produk extends Component {
     });
   };
 
-  editClick = id_produk => {
-    axios.get(this.API_URL + "/" + id_produk).then(res => {
+  editClick = customerId => {
+    axios.get(this.API_URL + "/" + customerId).then(res => {
       this.setState({
-        txt_id: id_produk,
-        txt_kategori: res.data.data.produk_kategori.id,
-        txt_nama_produk: res.data.data.nama_produk,
-        txt_satuan: res.data.data.satuan,
+        txt_id: customerId,
+        txt_customer_code: res.data.data.customer_code,
+        txt_customer_name: res.data.data.customer_name,
+        txt_address: res.data.data.address,
         value_simpan: "Edit"
       });
     });
-    console.log(this.state.produk);
-    
   };
 
-  hapusClick = id_produk => {
+  hapusClick = customerId => {
     if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios.delete(this.API_URL + "/" + id_produk).then(res => {
+      axios.delete(this.API_URL + "/" + customerId).then(res => {
         this.setState({
-          produk: [
-            ...this.state.produk.filter(
-                produk => produk.id !== id_produk
+          customers: [
+            ...this.state.customers.filter(
+                customer => customer.id !== customerId
             )
           ]
         });
@@ -85,9 +79,9 @@ class Produk extends Component {
   cancelClick = () => {
     this.setState({
       txt_id: "",
-      txt_kategori: "",
-      txt_nama_produk: "",
-      txt_satuan: "",
+      txt_customer_code: "",
+      txt_customer_name: "",
+      txt_address: "",
       value_simpan: "Simpan"
     });
   };
@@ -97,46 +91,39 @@ class Produk extends Component {
     if (this.state.txt_id === "") {
       axios
         .post(this.API_URL, {
-          kategori_id: this.state.txt_kategori,
-          nama_produk: this.state.txt_nama_produk,
-          satuan: this.state.txt_satuan
+          customer_code: this.state.txt_customer_code,
+          customer_name: this.state.txt_customer_name,
+          address: this.state.txt_address
         })
         .then(res => {
           if (res.status === 201) {
             this.setState({
-              produk: [...this.state.produk, res.data.data]
+                customers: [...this.state.customers, res.data.data]
             });
             this.cancelClick();
           } else {
             console.log("error");
           }
-        })
-        .catch(err => {
-          console.log(err.message);
         });
     } else {
       axios
         .put(this.API_URL + "/" + this.state.txt_id, {
-          kategori_id: this.state.txt_kategori,
-          nama_produk: this.state.txt_nama_produk,
-          satuan: this.state.txt_satuan
+            customer_code: this.state.txt_customer_code,
+            customer_name: this.state.txt_customer_name,
+            address: this.state.txt_address
         })
         .then(res => {
           if (res.status === 201) {
             this.setState({
-              produk: this.state.produk.map(prod => {
-                if (prod.id === res.data.data.id) {
-                  prod.kategori_id = res.data.data.produk_kategori.id;
-                  prod.produk_kategori.id = res.data.data.produk_kategori.id;
-                  prod.produk_kategori.nama = res.data.data.produk_kategori.nama;
-                  prod.nama_produk = res.data.data.nama_produk;
-                  prod.satuan = res.data.data.satuan;
+              customer: this.state.customers.map(customer => {
+                if (customer.id === res.data.data.id) {
+                  customer.customer_code = res.data.data.customer_code;
+                  customer.customer_name = res.data.data.customer_name;
+                  customer.address = res.data.data.address;
                 }
-                return prod;
+                return customer;
               })
             });
-            console.log(this.state.produk);
-            
             this.cancelClick();
           } else {
             console.log("error");
@@ -149,51 +136,53 @@ class Produk extends Component {
     return (
       <div className="animated fadeIn">
         <Row>
-            <Col xs="12" lg="12">
+          <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Form Produk
+                <i className="fa fa-align-justify"></i> Form Customer
               </CardHeader>
               <Form onSubmit={this.handleSubmit}>
                 <CardBody>
                   <FormGroup row>
-                    <Col md="2">
-                      <Label htmlFor="kategori-produk">Kategori Produk</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                        <Input type="select" name="txt_kategori" id="kategori_produk" onChange={this.handleChange} value={this.state.txt_kategori} required>
-                            <option value="">pilih kategori produk</option>
-                            {this.state.arrKategori.map((kategori, index) => 
-                              <option key={index} value={kategori.id}>{kategori.nama}</option>
-                            )}
-                        </Input>
-                    </Col>
-                    <Col md="2">
-                      <Label htmlFor="nama-produk">Nama Produk</Label>
+                  <Col md="2">
+                      <Label htmlFor="nama-produk">Kode Customer</Label>
                     </Col>
                     <Col xs="4" md="4">
                       <Input
                         type="text"
-                        name="txt_nama_produk"
+                        name="txt_customer_code"
                         onChange={this.handleChange}
-                        value={this.state.txt_nama_produk}
+                        value={this.state.txt_customer_code}
                         required
-                        placeholder="Nama Produk"
+                        placeholder="Kode Customer"
+                      />
+                    </Col>
+                    <Col md="2">
+                      <Label htmlFor="nama-produk">Nama Customer</Label>
+                    </Col>
+                    <Col xs="4" md="4">
+                      <Input
+                        type="text"
+                        name="txt_customer_name"
+                        onChange={this.handleChange}
+                        value={this.state.txt_customer_name}
+                        required
+                        placeholder="Nama Customer"
                       />
                     </Col>
                   </FormGroup>
                   <FormGroup row>
                     <Col md="2">
-                      <Label htmlFor="satuan-produk">Satuan Produk</Label>
+                      <Label htmlFor="satuan-produk">Alamat</Label>
                     </Col>
                     <Col xs="4" md="4">
                       <Input
                         type="text"
-                        name="txt_satuan"
+                        name="txt_address"
                         onChange={this.handleChange}
-                        value={this.state.txt_satuan}
+                        value={this.state.txt_address}
                         required
-                        placeholder="Satuan Produk"
+                        placeholder="Alamat"
                       />
                     </Col>
                   </FormGroup>
@@ -210,36 +199,37 @@ class Produk extends Component {
               </Form>
             </Card>
           </Col>
+          
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Data Produk
+                <i className="fa fa-align-justify"></i> Data Customer
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Kategori Produk</th>
-                      <th>Produk</th>
-                      <th>Satuan</th>
+                      <th>Kode customer</th>
+                      <th>Nama customer</th>
+                      <th>Alamat</th>
                       <th>#</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.produk.map((row, index) => (
-                      <tr key={row.id}>
+                    {this.state.customers.map((customer, index) => (
+                      <tr key={customer.id}>
                         <td>{index + 1}</td>
-                        <td>{row.produk_kategori.nama}</td>
-                        <td>{row.nama_produk}</td>
-                        <td>{row.satuan}</td>
+                        <td>{customer.customer_code}</td>
+                        <td>{customer.customer_name}</td>
+                        <td>{customer.address}</td>
                         <td>
                           <Button
                             size="sm"
                             color="danger"
                             className="mb-2 mr-1"
-                            id_kategori={row.id}
-                            onClick={this.hapusClick.bind(this, row.id)}
+                            id_kategori={customer.id}
+                            onClick={this.hapusClick.bind(this, customer.id)}
                           >
                             Hapus
                           </Button>
@@ -247,8 +237,8 @@ class Produk extends Component {
                             size="sm"
                             color="success"
                             className="mb-2 mr-1"
-                            id_kategori={row.id}
-                            onClick={this.editClick.bind(this, row.id)}
+                            id_kategori={customer.id}
+                            onClick={this.editClick.bind(this, customer.id)}
                           >
                             Edit
                           </Button>
@@ -266,4 +256,4 @@ class Produk extends Component {
   }
 }
 
-export default Produk;
+export default Deductions;

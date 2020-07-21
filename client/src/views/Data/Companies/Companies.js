@@ -10,7 +10,7 @@ import {
 } from "reactstrap";
 import axios from "axios";
 
-class GudangTelurs extends Component {
+class Companies extends Component {
   constructor(props) {
     super(props);
 
@@ -71,4 +71,4 @@ class GudangTelurs extends Component {
   }
 }
 
-export default GudangTelurs;
+export default Companies;

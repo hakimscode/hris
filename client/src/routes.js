@@ -3,15 +3,15 @@ const Dashboard = React.lazy(() => import("./views/Dashboard"));
 const Laporan = React.lazy(() => import("./views/Data/Laporan"));
 
 const KategoriProduk = React.lazy(() => import("./views/Data/KategoriProduk/KategoriProduk"));
-const Produk = React.lazy(() => import("./views/Data/Produk/Produk"));
-const Suppliers = React.lazy(() => import("./views/Data/Suppliers/Suppliers"));
-const Customers = React.lazy(() => import("./views/Data/Customers/Customers"));
+const Bonuses = React.lazy(() => import("./views/Master/Bonuses/Bonuses"));
+const Allowances = React.lazy(() => import("./views/Master/Allowances/Allowances"));
+const Deductions = React.lazy(() => import("./views/Master/Deductions/Deductions"));
 const Kandangs = React.lazy(() => import("./views/Data/Kandangs/Kandangs"));
-const GudangTelurs = React.lazy(() => import("./views/Data/GudangTelur/GudangTelurs"));
-const Projects = React.lazy(() => import("./views/Data/Project/Projects"));
-const DetailProject = React.lazy(() => import("./views/Data/Project/DetailProject"));
+const Companies = React.lazy(() => import("./views/Data/Companies/Companies"));
+const Employees = React.lazy(() => import("./views/Data/Employees/Employees"));
+const DetailProject = React.lazy(() => import("./views/Data/Employees/DetailProject"));
+const Payrolls = React.lazy(() => import("./views/Transactions/Payrolls/Payrolls"));
 const Penjualan = React.lazy(() => import("./views/Transactions/Penjualan/Penjualan"));
-const Pembelian = React.lazy(() => import("./views/Transactions/Pembelian/Pembelian"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -25,19 +25,19 @@ const routes = [
     component: KategoriProduk
   },
   {
-    path: "/data/Produk/",
-    name: "Produk",
-    component: Produk
+    path: "/master/bonuses/",
+    name: "Bonus",
+    component: Bonuses
   },
   {
-    path: "/data/Suppliers",
-    name: "Suppliers",
-    component: Suppliers
+    path: "/master/allowances",
+    name: "Tunjangan",
+    component: Allowances
   },
   {
-    path: "/data/Customers",
-    name: "Customer",
-    component: Customers
+    path: "/master/deductions",
+    name: "Potongan",
+    component: Deductions
   },
   {
     path: "/data/Kandangs",
@@ -45,14 +45,14 @@ const routes = [
     component: Kandangs
   },
   {
-    path: "/data/GudangTelurs",
-    name: "Gudang Telur",
-    component: GudangTelurs
+    path: "/data/companies",
+    name: "Perusahaan",
+    component: Companies
   },
   {
-    path: "/data/Projects",
+    path: "/data/employees",
     name: "Project",
-    component: Projects
+    component: Employees
   },
   {
     path: "/data/Project/:projectId",
@@ -60,14 +60,14 @@ const routes = [
     component: DetailProject
   },
   {
+    path: "/transactions/payrolls",
+    name: "Payrolls",
+    component: Payrolls
+  },
+  {
     path: "/transactions/Penjualan",
     name: "Penjualan",
     component: Penjualan
-  },
-  {
-    path: "/transactions/Pembelian",
-    name: "Pembelian",
-    component: Pembelian
   },
 ];
 
