@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsNumber, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsBoolean,
+  IsEnum
+} from 'class-validator';
+import { SalaryComponentEnum } from '../../shared/enums';
 
 export class CreateSalaryComponentDto {
   @IsString()
@@ -7,6 +14,7 @@ export class CreateSalaryComponentDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsEnum(SalaryComponentEnum)
   readonly componentType: string;
 
   @IsNumber()

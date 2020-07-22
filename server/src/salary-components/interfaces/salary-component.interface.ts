@@ -1,4 +1,5 @@
 import { Document } from 'mongoose';
+import { SalaryComponentEnum } from '../../shared/enums';
 
 export interface SalaryComponent extends Document {
   componentName: string;
