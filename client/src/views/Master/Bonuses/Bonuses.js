@@ -11,7 +11,7 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
 } from "reactstrap";
 import axios from "axios";
 
@@ -19,129 +19,168 @@ class Bonuses extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5000/produk";
-    this.API_URL_KATEGORI = "http://localhost:5000/produk_kategori";
-    // this.API_URL = "https://api.fawwazlab.com/lapor/api/jenis_laporan";
+    this.API_URL = "http://localhost:5001/salary-components";
 
     this.state = {
-      produk: [],
-      arrKategori: [],
-      txt_kategori: "",
-      txt_nama_produk: "",
-      txt_satuan: "",
-      txt_id: "",
+      bonuses: [],
 
-      value_simpan: "Simpan"
+      componentName: "",
+      componentType: "Bonus",
+      amount: 0,
+      decimalUnit: "rupiah",
+      isAdders: true,
+
+      selectedId: "",
+      actionSubmit: "Simpan",
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.cancelClick = this.cancelClick.bind(this);
   }
 
   componentDidMount() {
-    axios.get(this.API_URL).then(res => {
-      this.setState({ produk: res.data.data });
-    });
-    axios.get(this.API_URL_KATEGORI).then(res => {
-      this.setState({arrKategori: res.data.data})
-    })
+    axios
+      .get(this.API_URL, {
+        params: { componentType: this.state.componentType },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+        },
+      })
+      .then((res) => {
+        this.setState({ bonuses: res.data.data });
+      })
+      .catch((err) => console.log(err));
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  editClick = id_produk => {
-    axios.get(this.API_URL + "/" + id_produk).then(res => {
-      this.setState({
-        txt_id: id_produk,
-        txt_kategori: res.data.data.produk_kategori.id,
-        txt_nama_produk: res.data.data.nama_produk,
-        txt_satuan: res.data.data.satuan,
-        value_simpan: "Edit"
-      });
-    });
-    console.log(this.state.produk);
-    
-  };
-
-  hapusClick = id_produk => {
-    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios.delete(this.API_URL + "/" + id_produk).then(res => {
-        this.setState({
-          produk: [
-            ...this.state.produk.filter(
-                produk => produk.id !== id_produk
-            )
-          ]
-        });
-      });
+  actionStatus = (bonusId) => {
+    if (bonusId !== "") {
+      axios
+        .get(this.API_URL + "/" + bonusId, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({
+            selectedId: bonusId,
+            componentName: res.data.data.componentName,
+            amount: res.data.data.amount,
+            decimalUnit: res.data.data.decimalUnit ? "rupiah" : "persen",
+            actionSubmit: "Edit",
+          });
+        })
+        .catch((err) => console.log(err));
+    } else {
+      this.resetForm();
     }
   };
 
-  cancelClick = () => {
+  hapusClick = (bonusId) => {
+    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
+      axios
+        .delete(this.API_URL + "/" + bonusId, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then(() => {
+          this.setState({
+            bonuses: [
+              ...this.state.bonuses.filter((bonus) => bonus._id !== bonusId),
+            ],
+          });
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  resetForm = () => {
     this.setState({
-      txt_id: "",
-      txt_kategori: "",
-      txt_nama_produk: "",
-      txt_satuan: "",
-      value_simpan: "Simpan"
+      componentName: "",
+      amount: 0,
+      decimalUnit: "",
+      selectedId: "",
+      actionSubmit: "Simpan",
     });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    if (this.state.txt_id === "") {
+    if (this.state.selectedId === "") {
       axios
-        .post(this.API_URL, {
-          kategori_id: this.state.txt_kategori,
-          nama_produk: this.state.txt_nama_produk,
-          satuan: this.state.txt_satuan
-        })
-        .then(res => {
+        .post(
+          this.API_URL,
+          {
+            componentName: this.state.componentName,
+            componentType: this.state.componentType,
+            amount: parseInt(this.state.amount),
+            decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
+            isAdders: this.state.isAdders,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
           if (res.status === 201) {
             this.setState({
-              produk: [...this.state.produk, res.data.data]
+              bonuses: [...this.state.bonuses, res.data.data],
             });
-            this.cancelClick();
+            this.resetForm();
           } else {
             console.log("error");
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.message);
+          console.log(this.state);
         });
     } else {
       axios
-        .put(this.API_URL + "/" + this.state.txt_id, {
-          kategori_id: this.state.txt_kategori,
-          nama_produk: this.state.txt_nama_produk,
-          satuan: this.state.txt_satuan
-        })
-        .then(res => {
-          if (res.status === 201) {
+        .patch(
+          this.API_URL + "/" + this.state.selectedId,
+          {
+            componentName: this.state.componentName,
+            amount: parseInt(this.state.amount),
+            decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 202) {
             this.setState({
-              produk: this.state.produk.map(prod => {
-                if (prod.id === res.data.data.id) {
-                  prod.kategori_id = res.data.data.produk_kategori.id;
-                  prod.produk_kategori.id = res.data.data.produk_kategori.id;
-                  prod.produk_kategori.nama = res.data.data.produk_kategori.nama;
-                  prod.nama_produk = res.data.data.nama_produk;
-                  prod.satuan = res.data.data.satuan;
+              bonuses: this.state.bonuses.map((bonus) => {
+                if (bonus._id === res.data.data._id) {
+                  bonus.componentName = res.data.data.componentName;
+                  bonus.componentType = res.data.data.componentType;
+                  bonus.amount = res.data.data.amount;
+                  bonus.decimalUnit = res.data.data.decimalUnit
+                    ? "rupiah"
+                    : "persen";
+                  bonus.isAdders = res.data.data.isAdders;
                 }
-                return prod;
-              })
+                return bonus;
+              }),
             });
-            console.log(this.state.produk);
-            
-            this.cancelClick();
+
+            this.resetForm();
           } else {
             console.log("error");
           }
-        });
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -149,61 +188,63 @@ class Bonuses extends Component {
     return (
       <div className="animated fadeIn">
         <Row>
-            <Col xs="12" lg="12">
+          <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Form Produk
+                <i className="fa fa-align-justify"></i> Form Bonus
               </CardHeader>
-              <Form onSubmit={this.handleSubmit}>
+              <Form onSubmit={this.handleSubmit} className="form-horizontal">
                 <CardBody>
-                  <FormGroup row>
-                    <Col md="2">
-                      <Label htmlFor="kategori-produk">Kategori Produk</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                        <Input type="select" name="txt_kategori" id="kategori_produk" onChange={this.handleChange} value={this.state.txt_kategori} required>
-                            <option value="">pilih kategori produk</option>
-                            {this.state.arrKategori.map((kategori, index) => 
-                              <option key={index} value={kategori.id}>{kategori.nama}</option>
-                            )}
+                  <FormGroup>
+                    <Row>
+                      <Col xs="6" md="6">
+                        <Label htmlFor="bonus-name">Nama Bonus</Label>
+                        <Input
+                          type="text"
+                          name="componentName"
+                          onChange={this.handleChange}
+                          value={this.state.componentName}
+                          required
+                          placeholder="Nama Bonus"
+                        />
+                      </Col>
+                      <Col xs="4" md="4">
+                        <Label htmlFor="amount">Jumlah</Label>
+                        <Input
+                          type="number"
+                          name="amount"
+                          onChange={this.handleChange}
+                          value={this.state.amount}
+                          required
+                          placeholder="Jumlah"
+                        />
+                      </Col>
+                      <Col xs="2" md="2">
+                        <Label htmlFor="unit">Satuan</Label>
+                        <Input
+                          type="select"
+                          name="decimalUnit"
+                          onChange={this.handleChange}
+                          value={this.state.decimalUnit}
+                          required
+                        >
+                          <option value="rupiah">Rp</option>
+                          <option value="persen">%</option>
                         </Input>
-                    </Col>
-                    <Col md="2">
-                      <Label htmlFor="nama-produk">Nama Produk</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_nama_produk"
-                        onChange={this.handleChange}
-                        value={this.state.txt_nama_produk}
-                        required
-                        placeholder="Nama Produk"
-                      />
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row>
-                    <Col md="2">
-                      <Label htmlFor="satuan-produk">Satuan Produk</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_satuan"
-                        onChange={this.handleChange}
-                        value={this.state.txt_satuan}
-                        required
-                        placeholder="Satuan Produk"
-                      />
-                    </Col>
+                      </Col>
+                    </Row>
                   </FormGroup>
                 </CardBody>
                 <CardFooter>
                   <Button type="submit" size="sm" color="primary">
                     <i className="fa fa-dot-circle-o"></i>{" "}
-                    {this.state.value_simpan}
+                    {this.state.actionSubmit}
                   </Button>
-                  <Button size="sm" color="danger" onClick={this.cancelClick}>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    onClick={this.actionStatus.bind(this, "")}
+                  >
                     <i className="fa fa-ban"></i> Cancel
                   </Button>
                 </CardFooter>
@@ -213,33 +254,32 @@ class Bonuses extends Component {
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Data Produk
+                <i className="fa fa-align-justify"></i> Data Bonus
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Kategori Produk</th>
-                      <th>Produk</th>
+                      <th>Nama Bonus</th>
+                      <th>Jumlah</th>
                       <th>Satuan</th>
                       <th>#</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.produk.map((row, index) => (
-                      <tr key={row.id}>
+                    {this.state.bonuses.map((bonus, index) => (
+                      <tr key={bonus._id}>
                         <td>{index + 1}</td>
-                        <td>{row.produk_kategori.nama}</td>
-                        <td>{row.nama_produk}</td>
-                        <td>{row.satuan}</td>
+                        <td>{bonus.componentName}</td>
+                        <td>{bonus.amount}</td>
+                        <td>{bonus.decimalUnit ? "Rp" : "%"}</td>
                         <td>
                           <Button
                             size="sm"
                             color="danger"
                             className="mb-2 mr-1"
-                            id_kategori={row.id}
-                            onClick={this.hapusClick.bind(this, row.id)}
+                            onClick={this.hapusClick.bind(this, bonus._id)}
                           >
                             Hapus
                           </Button>
@@ -247,8 +287,7 @@ class Bonuses extends Component {
                             size="sm"
                             color="success"
                             className="mb-2 mr-1"
-                            id_kategori={row.id}
-                            onClick={this.editClick.bind(this, row.id)}
+                            onClick={this.actionStatus.bind(this, bonus._id)}
                           >
                             Edit
                           </Button>

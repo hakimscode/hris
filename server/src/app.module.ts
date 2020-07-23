@@ -12,7 +12,9 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { PayrollsModule } from './payrolls/payrolls.module';
 import { roles } from './app.roles';
 
-const DB_HOST_HRIS = process.env.DB_HOST_HRIS ? process.env.DB_HOST_HRIS : "localhost";
+const DB_HOST_HRIS = process.env.DB_HOST_HRIS
+  ? process.env.DB_HOST_HRIS
+  : 'localhost';
 
 @Module({
   imports: [

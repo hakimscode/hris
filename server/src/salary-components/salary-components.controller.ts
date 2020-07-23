@@ -8,13 +8,15 @@ import {
   Param,
   Patch,
   Delete,
-  HttpCode
+  HttpCode,
+  Query
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ACGuard, UseRoles } from 'nest-access-control';
 import { SalaryComponentsService } from './salary-components.service';
 import { CreateSalaryComponentDto } from './dtos/create-salary-component-dto';
 import { UpdateSalaryComponentDto } from './dtos/update-salary-component-dto';
+import { FindSalaryComponentRequestDto } from './dtos/find-salary-component-request.dto';
 
 @Controller('salary-components')
 export class SalaryComponentsController {
@@ -29,8 +31,10 @@ export class SalaryComponentsController {
     possession: 'any',
     resource: 'salaryComponent'
   })
-  async getSalaryComponents() {
-    return this.SalaryComponentsServices.getSalaryComponents();
+  async getSalaryComponents(@Query() query: FindSalaryComponentRequestDto) {
+    return this.SalaryComponentsServices.getSalaryComponents(
+      query.componentType
+    );
   }
 
   @Post()
