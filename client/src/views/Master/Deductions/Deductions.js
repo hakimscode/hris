@@ -11,7 +11,7 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
 } from "reactstrap";
 import axios from "axios";
 
@@ -19,116 +19,170 @@ class Deductions extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5000/customers";
-    // this.API_URL = "https://api.fawwazlab.com/lapor/api/jenis_laporan";
+    this.API_URL = "http://localhost:5001/salary-components";
 
     this.state = {
-      customers: [],
+      deductions: [],
 
-      txt_customer_code: "",
-      txt_customer_name: "",
-      txt_address: "",
-      txt_id: "",
+      componentName: "",
+      componentType: "Potongan",
+      amount: 0,
+      decimalUnit: "rupiah",
+      isAdders: false,
 
-      value_simpan: "Simpan"
+      selectedId: "",
+      actionSubmit: "Simpan",
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.cancelClick = this.cancelClick.bind(this);
   }
 
   componentDidMount() {
-    axios.get(this.API_URL).then(res => {
-      this.setState({ customers: res.data.data });
-    });
+    axios
+      .get(this.API_URL, {
+        params: { componentType: this.state.componentType },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+        },
+      })
+      .then((res) => {
+        this.setState({ deductions: res.data.data });
+      })
+      .catch((err) => console.log(err));
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  editClick = customerId => {
-    axios.get(this.API_URL + "/" + customerId).then(res => {
-      this.setState({
-        txt_id: customerId,
-        txt_customer_code: res.data.data.customer_code,
-        txt_customer_name: res.data.data.customer_name,
-        txt_address: res.data.data.address,
-        value_simpan: "Edit"
-      });
-    });
-  };
-
-  hapusClick = customerId => {
-    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios.delete(this.API_URL + "/" + customerId).then(res => {
-        this.setState({
-          customers: [
-            ...this.state.customers.filter(
-                customer => customer.id !== customerId
-            )
-          ]
-        });
-      });
+  actionStatus = (deductionId) => {
+    if (deductionId !== "") {
+      axios
+        .get(this.API_URL + "/" + deductionId, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({
+            selectedId: deductionId,
+            componentName: res.data.data.componentName,
+            amount: res.data.data.amount,
+            decimalUnit: res.data.data.decimalUnit ? "rupiah" : "persen",
+            actionSubmit: "Edit",
+          });
+        })
+        .catch((err) => console.log(err));
+    } else {
+      this.resetForm();
     }
   };
 
-  cancelClick = () => {
+  hapusClick = (deductionId) => {
+    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
+      axios
+        .delete(this.API_URL + "/" + deductionId, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then(() => {
+          this.setState({
+            deductions: [
+              ...this.state.deductions.filter(
+                (deduction) => deduction._id !== deductionId
+              ),
+            ],
+          });
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  resetForm = () => {
     this.setState({
-      txt_id: "",
-      txt_customer_code: "",
-      txt_customer_name: "",
-      txt_address: "",
-      value_simpan: "Simpan"
+      componentName: "",
+      amount: 0,
+      decimalUnit: "",
+      selectedId: "",
+      actionSubmit: "Simpan",
     });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    if (this.state.txt_id === "") {
+    if (this.state.selectedId === "") {
       axios
-        .post(this.API_URL, {
-          customer_code: this.state.txt_customer_code,
-          customer_name: this.state.txt_customer_name,
-          address: this.state.txt_address
-        })
-        .then(res => {
+        .post(
+          this.API_URL,
+          {
+            componentName: this.state.componentName,
+            componentType: this.state.componentType,
+            amount: parseInt(this.state.amount),
+            decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
+            isAdders: this.state.isAdders,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
           if (res.status === 201) {
             this.setState({
-                customers: [...this.state.customers, res.data.data]
+              deductions: [...this.state.deductions, res.data.data],
             });
-            this.cancelClick();
+            this.resetForm();
           } else {
             console.log("error");
           }
+        })
+        .catch((err) => {
+          console.log(err.message);
+          console.log(this.state);
         });
     } else {
       axios
-        .put(this.API_URL + "/" + this.state.txt_id, {
-            customer_code: this.state.txt_customer_code,
-            customer_name: this.state.txt_customer_name,
-            address: this.state.txt_address
-        })
-        .then(res => {
-          if (res.status === 201) {
+        .patch(
+          this.API_URL + "/" + this.state.selectedId,
+          {
+            componentName: this.state.componentName,
+            amount: parseInt(this.state.amount),
+            decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 202) {
             this.setState({
-              customer: this.state.customers.map(customer => {
-                if (customer.id === res.data.data.id) {
-                  customer.customer_code = res.data.data.customer_code;
-                  customer.customer_name = res.data.data.customer_name;
-                  customer.address = res.data.data.address;
+              deductions: this.state.deductions.map((deduction) => {
+                if (deduction._id === res.data.data._id) {
+                  deduction.componentName = res.data.data.componentName;
+                  deduction.componentType = res.data.data.componentType;
+                  deduction.amount = res.data.data.amount;
+                  deduction.decimalUnit = res.data.data.decimalUnit
+                    ? "rupiah"
+                    : "persen";
+                  deduction.isAdders = res.data.data.isAdders;
                 }
-                return customer;
-              })
+                return deduction;
+              }),
             });
-            this.cancelClick();
+
+            this.resetForm();
           } else {
             console.log("error");
           }
-        });
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -139,97 +193,95 @@ class Deductions extends Component {
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Form Customer
+                <i className="fa fa-align-justify"></i> Form Potongan
               </CardHeader>
-              <Form onSubmit={this.handleSubmit}>
+              <Form onSubmit={this.handleSubmit} className="form-horizontal">
                 <CardBody>
-                  <FormGroup row>
-                  <Col md="2">
-                      <Label htmlFor="nama-produk">Kode Customer</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_customer_code"
-                        onChange={this.handleChange}
-                        value={this.state.txt_customer_code}
-                        required
-                        placeholder="Kode Customer"
-                      />
-                    </Col>
-                    <Col md="2">
-                      <Label htmlFor="nama-produk">Nama Customer</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_customer_name"
-                        onChange={this.handleChange}
-                        value={this.state.txt_customer_name}
-                        required
-                        placeholder="Nama Customer"
-                      />
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row>
-                    <Col md="2">
-                      <Label htmlFor="satuan-produk">Alamat</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_address"
-                        onChange={this.handleChange}
-                        value={this.state.txt_address}
-                        required
-                        placeholder="Alamat"
-                      />
-                    </Col>
+                  <FormGroup>
+                    <Row>
+                      <Col xs="6" md="6">
+                        <Label htmlFor="deduction-name">Nama Potongan</Label>
+                        <Input
+                          type="text"
+                          name="componentName"
+                          onChange={this.handleChange}
+                          value={this.state.componentName}
+                          required
+                          placeholder="Nama Potongan"
+                        />
+                      </Col>
+                      <Col xs="4" md="4">
+                        <Label htmlFor="amount">Jumlah</Label>
+                        <Input
+                          type="number"
+                          name="amount"
+                          onChange={this.handleChange}
+                          value={this.state.amount}
+                          required
+                          placeholder="Jumlah"
+                        />
+                      </Col>
+                      <Col xs="2" md="2">
+                        <Label htmlFor="unit">Satuan</Label>
+                        <Input
+                          type="select"
+                          name="decimalUnit"
+                          onChange={this.handleChange}
+                          value={this.state.decimalUnit}
+                          required
+                        >
+                          <option value="rupiah">Rp</option>
+                          <option value="persen">%</option>
+                        </Input>
+                      </Col>
+                    </Row>
                   </FormGroup>
                 </CardBody>
                 <CardFooter>
                   <Button type="submit" size="sm" color="primary">
                     <i className="fa fa-dot-circle-o"></i>{" "}
-                    {this.state.value_simpan}
+                    {this.state.actionSubmit}
                   </Button>
-                  <Button size="sm" color="danger" onClick={this.cancelClick}>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    onClick={this.actionStatus.bind(this, "")}
+                  >
                     <i className="fa fa-ban"></i> Cancel
                   </Button>
                 </CardFooter>
               </Form>
             </Card>
           </Col>
-          
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Data Customer
+                <i className="fa fa-align-justify"></i> Data Potongan
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Kode customer</th>
-                      <th>Nama customer</th>
-                      <th>Alamat</th>
+                      <th>Nama Potongan</th>
+                      <th>Jumlah</th>
+                      <th>Satuan</th>
                       <th>#</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.customers.map((customer, index) => (
-                      <tr key={customer.id}>
+                    {this.state.deductions.map((deduction, index) => (
+                      <tr key={deduction._id}>
                         <td>{index + 1}</td>
-                        <td>{customer.customer_code}</td>
-                        <td>{customer.customer_name}</td>
-                        <td>{customer.address}</td>
+                        <td>{deduction.componentName}</td>
+                        <td>{deduction.amount}</td>
+                        <td>{deduction.decimalUnit ? "Rp" : "%"}</td>
                         <td>
                           <Button
                             size="sm"
                             color="danger"
                             className="mb-2 mr-1"
-                            id_kategori={customer.id}
-                            onClick={this.hapusClick.bind(this, customer.id)}
+                            onClick={this.hapusClick.bind(this, deduction._id)}
                           >
                             Hapus
                           </Button>
@@ -237,8 +289,10 @@ class Deductions extends Component {
                             size="sm"
                             color="success"
                             className="mb-2 mr-1"
-                            id_kategori={customer.id}
-                            onClick={this.editClick.bind(this, customer.id)}
+                            onClick={this.actionStatus.bind(
+                              this,
+                              deduction._id
+                            )}
                           >
                             Edit
                           </Button>
