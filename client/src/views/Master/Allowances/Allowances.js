@@ -11,7 +11,7 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
 } from "reactstrap";
 import axios from "axios";
 
@@ -19,116 +19,170 @@ class Allowances extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5000/suppliers";
-    // this.API_URL = "https://api.fawwazlab.com/lapor/api/jenis_laporan";
+    this.API_URL = "http://localhost:5001/salary-components";
 
     this.state = {
-      suppliers: [],
+      allowances: [],
 
-      txt_supplier_code: "",
-      txt_supplier_name: "",
-      txt_address: "",
-      txt_id: "",
+      componentName: "",
+      componentType: "Tunjangan",
+      amount: 0,
+      decimalUnit: "rupiah",
+      isAdders: true,
 
-      value_simpan: "Simpan"
+      selectedId: "",
+      actionSubmit: "Simpan",
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.cancelClick = this.cancelClick.bind(this);
   }
 
   componentDidMount() {
-    axios.get(this.API_URL).then(res => {
-      this.setState({ suppliers: res.data.data });
-    });
+    axios
+      .get(this.API_URL, {
+        params: { componentType: this.state.componentType },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+        },
+      })
+      .then((res) => {
+        this.setState({ allowances: res.data.data });
+      })
+      .catch((err) => console.log(err));
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  editClick = supplierId => {
-    axios.get(this.API_URL + "/" + supplierId).then(res => {
-      this.setState({
-        txt_id: supplierId,
-        txt_supplier_code: res.data.data.supplier_code,
-        txt_supplier_name: res.data.data.supplier_name,
-        txt_address: res.data.data.address,
-        value_simpan: "Edit"
-      });
-    });
-  };
-
-  hapusClick = supplierId => {
-    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios.delete(this.API_URL + "/" + supplierId).then(res => {
-        this.setState({
-          suppliers: [
-            ...this.state.suppliers.filter(
-                supplier => supplier.id !== supplierId
-            )
-          ]
-        });
-      });
+  actionStatus = (allowanceId) => {
+    if (allowanceId !== "") {
+      axios
+        .get(this.API_URL + "/" + allowanceId, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({
+            selectedId: allowanceId,
+            componentName: res.data.data.componentName,
+            amount: res.data.data.amount,
+            decimalUnit: res.data.data.decimalUnit ? "rupiah" : "persen",
+            actionSubmit: "Edit",
+          });
+        })
+        .catch((err) => console.log(err));
+    } else {
+      this.resetForm();
     }
   };
 
-  cancelClick = () => {
+  hapusClick = (allowanceId) => {
+    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
+      axios
+        .delete(this.API_URL + "/" + allowanceId, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then(() => {
+          this.setState({
+            allowances: [
+              ...this.state.allowances.filter(
+                (allowance) => allowance._id !== allowanceId
+              ),
+            ],
+          });
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  resetForm = () => {
     this.setState({
-      txt_id: "",
-      txt_supplier_code: "",
-      txt_supplier_name: "",
-      txt_address: "",
-      value_simpan: "Simpan"
+      componentName: "",
+      amount: 0,
+      decimalUnit: "",
+      selectedId: "",
+      actionSubmit: "Simpan",
     });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    if (this.state.txt_id === "") {
+    if (this.state.selectedId === "") {
       axios
-        .post(this.API_URL, {
-          supplier_code: this.state.txt_supplier_code,
-          supplier_name: this.state.txt_supplier_name,
-          address: this.state.txt_address
-        })
-        .then(res => {
+        .post(
+          this.API_URL,
+          {
+            componentName: this.state.componentName,
+            componentType: this.state.componentType,
+            amount: parseInt(this.state.amount),
+            decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
+            isAdders: this.state.isAdders,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
           if (res.status === 201) {
             this.setState({
-                suppliers: [...this.state.suppliers, res.data.data]
+              allowances: [...this.state.allowances, res.data.data],
             });
-            this.cancelClick();
+            this.resetForm();
           } else {
             console.log("error");
           }
+        })
+        .catch((err) => {
+          console.log(err.message);
+          console.log(this.state);
         });
     } else {
       axios
-        .put(this.API_URL + "/" + this.state.txt_id, {
-            supplier_code: this.state.txt_supplier_code,
-            supplier_name: this.state.txt_supplier_name,
-            address: this.state.txt_address
-        })
-        .then(res => {
-          if (res.status === 201) {
+        .patch(
+          this.API_URL + "/" + this.state.selectedId,
+          {
+            componentName: this.state.componentName,
+            amount: parseInt(this.state.amount),
+            decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 202) {
             this.setState({
-              supplier: this.state.suppliers.map(supplier => {
-                if (supplier.id === res.data.data.id) {
-                  supplier.supplier_code = res.data.data.supplier_code;
-                  supplier.supplier_name = res.data.data.supplier_name;
-                  supplier.address = res.data.data.address;
+              allowances: this.state.allowances.map((allowance) => {
+                if (allowance._id === res.data.data._id) {
+                  allowance.componentName = res.data.data.componentName;
+                  allowance.componentType = res.data.data.componentType;
+                  allowance.amount = res.data.data.amount;
+                  allowance.decimalUnit = res.data.data.decimalUnit
+                    ? "rupiah"
+                    : "persen";
+                  allowance.isAdders = res.data.data.isAdders;
                 }
-                return supplier;
-              })
+                return allowance;
+              }),
             });
-            this.cancelClick();
+
+            this.resetForm();
           } else {
             console.log("error");
           }
-        });
+        })
+        .catch((err) => console.log(err));
     }
   };
 
@@ -139,97 +193,95 @@ class Allowances extends Component {
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Form Supplier
+                <i className="fa fa-align-justify"></i> Form Tunjangan
               </CardHeader>
-              <Form onSubmit={this.handleSubmit}>
+              <Form onSubmit={this.handleSubmit} className="form-horizontal">
                 <CardBody>
-                  <FormGroup row>
-                  <Col md="2">
-                      <Label htmlFor="nama-produk">Kode Supplier</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_supplier_code"
-                        onChange={this.handleChange}
-                        value={this.state.txt_supplier_code}
-                        required
-                        placeholder="Kode Supplier"
-                      />
-                    </Col>
-                    <Col md="2">
-                      <Label htmlFor="nama-produk">Nama Supplier</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_supplier_name"
-                        onChange={this.handleChange}
-                        value={this.state.txt_supplier_name}
-                        required
-                        placeholder="Nama Supplier"
-                      />
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row>
-                    <Col md="2">
-                      <Label htmlFor="satuan-produk">Alamat</Label>
-                    </Col>
-                    <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_address"
-                        onChange={this.handleChange}
-                        value={this.state.txt_address}
-                        required
-                        placeholder="Alamat"
-                      />
-                    </Col>
+                  <FormGroup>
+                    <Row>
+                      <Col xs="6" md="6">
+                        <Label htmlFor="allowance-name">Nama Tunjangan</Label>
+                        <Input
+                          type="text"
+                          name="componentName"
+                          onChange={this.handleChange}
+                          value={this.state.componentName}
+                          required
+                          placeholder="Nama Tunjangan"
+                        />
+                      </Col>
+                      <Col xs="4" md="4">
+                        <Label htmlFor="amount">Jumlah</Label>
+                        <Input
+                          type="number"
+                          name="amount"
+                          onChange={this.handleChange}
+                          value={this.state.amount}
+                          required
+                          placeholder="Jumlah"
+                        />
+                      </Col>
+                      <Col xs="2" md="2">
+                        <Label htmlFor="unit">Satuan</Label>
+                        <Input
+                          type="select"
+                          name="decimalUnit"
+                          onChange={this.handleChange}
+                          value={this.state.decimalUnit}
+                          required
+                        >
+                          <option value="rupiah">Rp</option>
+                          <option value="persen">%</option>
+                        </Input>
+                      </Col>
+                    </Row>
                   </FormGroup>
                 </CardBody>
                 <CardFooter>
                   <Button type="submit" size="sm" color="primary">
                     <i className="fa fa-dot-circle-o"></i>{" "}
-                    {this.state.value_simpan}
+                    {this.state.actionSubmit}
                   </Button>
-                  <Button size="sm" color="danger" onClick={this.cancelClick}>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    onClick={this.actionStatus.bind(this, "")}
+                  >
                     <i className="fa fa-ban"></i> Cancel
                   </Button>
                 </CardFooter>
               </Form>
             </Card>
           </Col>
-          
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Data Supplier
+                <i className="fa fa-align-justify"></i> Data Tunjangan
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Kode Supplier</th>
-                      <th>Nama Supplier</th>
-                      <th>Alamat</th>
+                      <th>Nama Tunjangan</th>
+                      <th>Jumlah</th>
+                      <th>Satuan</th>
                       <th>#</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.suppliers.map((supplier, index) => (
-                      <tr key={supplier.id}>
+                    {this.state.allowances.map((allowance, index) => (
+                      <tr key={allowance._id}>
                         <td>{index + 1}</td>
-                        <td>{supplier.supplier_code}</td>
-                        <td>{supplier.supplier_name}</td>
-                        <td>{supplier.address}</td>
+                        <td>{allowance.componentName}</td>
+                        <td>{allowance.amount}</td>
+                        <td>{allowance.decimalUnit ? "Rp" : "%"}</td>
                         <td>
                           <Button
                             size="sm"
                             color="danger"
                             className="mb-2 mr-1"
-                            id_kategori={supplier.id}
-                            onClick={this.hapusClick.bind(this, supplier.id)}
+                            onClick={this.hapusClick.bind(this, allowance._id)}
                           >
                             Hapus
                           </Button>
@@ -237,8 +289,10 @@ class Allowances extends Component {
                             size="sm"
                             color="success"
                             className="mb-2 mr-1"
-                            id_kategori={supplier.id}
-                            onClick={this.editClick.bind(this, supplier.id)}
+                            onClick={this.actionStatus.bind(
+                              this,
+                              allowance._id
+                            )}
                           >
                             Edit
                           </Button>
