@@ -12,166 +12,430 @@ import {
   FormGroup,
   Label,
   Input,
-  Badge
 } from "reactstrap";
-import { Link } from "react-router-dom";
 import axios from "axios";
 
 class Employees extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5000/projects";
-    this.API_URL_KANDANG = "http://localhost:5000/kandangs";
-    // this.API_URL = "https://api.fawwazlab.com/lapor/api/jenis_laporan";
+    this.API_URL = "http://localhost:5001/employees";
+    this.API_URL_COMPANIES = "http://localhost:5001/companies";
 
     this.state = {
-      projects: [],
-      arrKandang: [],
-      txt_kandang: "",
-      txt_periode: "",
-      txt_populasi_awal: "",
-      txt_tanggal_mulai: "",
-      txt_id: "",
+      employees: [],
+      companies: [],
 
-      value_simpan: "Simpan"
+      companyId: "",
+      idNumber: "",
+      name: "",
+      address: "",
+      gender: "",
+      placeOfBirth: "",
+      dateOfBirth: "",
+      maritalStatus: "",
+      phoneNumber: "",
+      email: "",
+      department: "",
+      role: "",
+      primarySalary: "",
+      dailyAllowance: "",
+
+      selectedId: "",
+      actionSubmit: "Simpan",
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.cancelClick = this.cancelClick.bind(this);
   }
 
   componentDidMount() {
-    axios.get(this.API_URL + '/all').then(res => {
-      this.setState({ projects: res.data.data });
-    });
-    axios.get(this.API_URL_KANDANG).then(res => {
-      this.setState({arrKandang: res.data.data})
-    })
+    axios
+      .get(this.API_URL, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+        },
+      })
+      .then((res) => {
+        this.setState({ employees: res.data.data });
+      })
+      .catch((err) => console.log(err));
+
+    axios
+      .get(this.API_URL_COMPANIES, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+        },
+      })
+      .then((res) => {
+        this.setState({ companies: res.data.data });
+      })
+      .catch((err) => console.log(err));
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  cancelClick = () => {
-    this.setState({
-      txt_id: "",
-      txt_kandang: "",
-      txt_periode: "",
-      txt_populasi_awal: "",
-      txt_tanggal_mulai: "",
-    });
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    axios
-        .post(this.API_URL, {
-          kandang_id: this.state.txt_kandang,
-          periode: this.state.txt_periode,
-          populasi_awal: this.state.txt_populasi_awal,
-          tanggal_mulai: this.state.txt_tanggal_mulai
+  actionStatus = (employeeId) => {
+    if (employeeId !== "") {
+      axios
+        .get(this.API_URL + "/" + employeeId, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
         })
-        .then(res => {
+        .then((res) => {
+          this.setState({
+            selectedId: employeeId,
+            name: res.data.data.name,
+            field: res.data.data.field,
+            address: res.data.data.address,
+          });
+        })
+        .catch((err) => console.log(err));
+    } else {
+      this.resetForm();
+    }
+  };
+
+  hapusClick = (employeeId) => {
+    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
+      axios
+        .delete(this.API_URL + "/" + employeeId, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then(() => {
+          this.setState({
+            employees: [
+              ...this.state.employees.filter(
+                (employee) => employee._id !== employeeId
+              ),
+            ],
+          });
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
+  resetForm = () => {
+    this.setState({
+      name: "",
+      field: "",
+      address: "",
+      selectedId: "",
+      actionSubmit: "Simpan",
+    });
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+    if (this.state.selectedId === "") {
+      axios
+        .post(
+          this.API_URL,
+          {
+            name: this.state.name,
+            field: this.state.field,
+            address: this.state.address,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
           if (res.status === 201) {
             this.setState({
-              projects: [...this.state.projects, res.data.data]
+              employees: [...this.state.employees, res.data.data],
             });
-            this.cancelClick();
+            this.resetForm();
           } else {
             console.log("error");
           }
+        })
+        .catch((err) => {
+          console.log(err.message);
+          console.log(this.state);
         });
-  };
+    } else {
+      axios
+        .patch(
+          this.API_URL + "/" + this.state.selectedId,
+          {
+            name: this.state.name,
+            field: this.state.field,
+            address: this.state.address,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 202) {
+            this.setState({
+              employees: this.state.employees.map((employee) => {
+                if (employee._id === res.data.data._id) {
+                  employee.name = res.data.data.name;
+                  employee.field = res.data.data.field;
+                  employee.address = res.data.data.address;
+                }
+                return employee;
+              }),
+            });
 
-  statusProject = (status) => {
-    if (status === 0){
-      return <Badge color="secondary">Sedang Berjalan</Badge>
-    }else{
-      return <Badge color="success">Sudah Closing</Badge>
+            this.resetForm();
+          } else {
+            console.log("error");
+          }
+        })
+        .catch((err) => console.log(err));
     }
-  }
-
-  linkDetailId = id => {
-    return "/data/Project/" + id;
   };
 
   render() {
     return (
       <div className="animated fadeIn">
         <Row>
-            <Col xs="12" lg="12">
+          <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Form Project
+                <i className="fa fa-align-justify"></i> Form Pegawai
               </CardHeader>
-              <Form onSubmit={this.handleSubmit}>
+              <Form onSubmit={this.handleSubmit} className="form-horizontal">
                 <CardBody>
-                  <FormGroup row>
-                    <Col md="2">
-                      <Label htmlFor="kategori-project">Kandang</Label>
-                    </Col>
+                  <Row>
                     <Col xs="4" md="4">
-                        <Input type="select" name="txt_kandang" id="kandang" onChange={this.handleChange} value={this.state.txt_kandang} required>
-                            <option value="">pilih kandang</option>
-                            {this.state.arrKandang.map((kandang, index) => 
-                              <option key={index} value={kandang.id}>{kandang.name}</option>
-                            )}
+                      <FormGroup>
+                        <Label htmlFor="field">NIK</Label>
+                        <Input
+                          type="text"
+                          name="idNumber"
+                          onChange={this.handleChange}
+                          value={this.state.idNumber}
+                          required
+                          placeholder="NIK"
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col xs="6" md="6">
+                      <FormGroup>
+                        <Label htmlFor="employee-name">Nama Pegawai</Label>
+                        <Input
+                          type="text"
+                          name="name"
+                          onChange={this.handleChange}
+                          value={this.state.name}
+                          required
+                          placeholder="Nama Pegawai"
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col xs="2" md="2">
+                      <FormGroup>
+                        <Label htmlFor="employee-name">Jenis Kelamin</Label>
+                        <Input
+                          type="select"
+                          name="gender"
+                          onChange={this.handleChange}
+                          value={this.state.gender}
+                          required
+                        >
+                          <option value="Laki-laki">Laki-laki</option>
+                          <option value="Perempuan">Perempuan</option>
                         </Input>
+                      </FormGroup>
                     </Col>
-                    <Col md="2">
-                      <Label htmlFor="nama-project">Periode</Label>
+                  </Row>
+
+                  <Row>
+                    <Col xs="4" md="4">
+                      <FormGroup>
+                        <Label htmlFor="field">Tempat Lahir</Label>
+                        <Input
+                          type="text"
+                          name="placeOfBirth"
+                          onChange={this.handleChange}
+                          value={this.state.placeOfBirth}
+                          required
+                          placeholder="Tempat Lahir"
+                        />
+                      </FormGroup>
                     </Col>
                     <Col xs="4" md="4">
-                      <Input
-                        type="number"
-                        name="txt_periode"
-                        onChange={this.handleChange}
-                        value={this.state.txt_periode}
-                        required
-                        placeholder="Periode"
-                      />
-                    </Col>
-                  </FormGroup>
-                  <FormGroup row>
-                    <Col md="2">
-                      <Label htmlFor="satuan-project">Populasi Awal</Label>
+                      <FormGroup>
+                        <Label htmlFor="field">Tanggal Lahir</Label>
+                        <Input
+                          type="text"
+                          name="dateOfBirth"
+                          onChange={this.handleChange}
+                          value={this.state.dateOfBirth}
+                          required
+                          placeholder="Tanggal Lahir"
+                        />
+                      </FormGroup>
                     </Col>
                     <Col xs="4" md="4">
-                      <Input
-                        type="number"
-                        name="txt_populasi_awal"
-                        onChange={this.handleChange}
-                        value={this.state.txt_populasi_awal}
-                        required
-                        placeholder="Populasi Awal"
-                      />
+                      <FormGroup>
+                        <Label htmlFor="employee-name">Status Kawin</Label>
+                        <Input
+                          type="select"
+                          name="maritalStatus"
+                          onChange={this.handleChange}
+                          value={this.state.maritalStatus}
+                          required
+                        >
+                          <option value="Single">Single</option>
+                          <option value="Married">Married</option>
+                        </Input>
+                      </FormGroup>
                     </Col>
-                    <Col md="2">
-                      <Label htmlFor="satuan-project">Tanggal Mulai</Label>
+                  </Row>
+
+                  <Row>
+                    <Col xs="6" md="6">
+                      <Row>
+                        <Col xs="12" md="12">
+                          <FormGroup>
+                            <Label htmlFor="field">Email</Label>
+                            <Input
+                              type="email"
+                              name="email"
+                              onChange={this.handleChange}
+                              value={this.state.email}
+                              required
+                              placeholder="Email"
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+
+                      <Row>
+                        <Col xs="12" md="12">
+                          <FormGroup>
+                            <Label htmlFor="field">No HP</Label>
+                            <Input
+                              type="text"
+                              name="phoneNumber"
+                              onChange={this.handleChange}
+                              value={this.state.phoneNumber}
+                              required
+                              placeholder="No HP"
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col xs="6" md="6">
+                      <FormGroup>
+                        <Label htmlFor="unit">Alamat</Label>
+                        <Input
+                          type="textarea"
+                          name="address"
+                          onChange={this.handleChange}
+                          value={this.state.address}
+                          rows="5"
+                          placeholder="Alamat"
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col xs="6" md="6">
+                      <FormGroup>
+                        <Label htmlFor="employee-name">Perusahaan</Label>
+                        <Input
+                          type="select"
+                          name="companyId"
+                          onChange={this.handleChange}
+                          value={this.state.companyId}
+                          required
+                        >
+                          <option value="">-- pilih perusahaan --</option>
+                          {this.state.companies.map((company) => (
+                            <option key={company._id} value={company._id}>
+                              {company.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                    <Col xs="6" md="6">
+                      <FormGroup>
+                        <Label htmlFor="employee-name">Departemen</Label>
+                        <Input
+                          type="text"
+                          name="department"
+                          onChange={this.handleChange}
+                          value={this.state.department}
+                          required
+                          placeholder="Departemen"
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col xs="4" md="4">
+                      <FormGroup>
+                        <Label htmlFor="employee-name">Jabatan</Label>
+                        <Input
+                          type="text"
+                          name="role"
+                          onChange={this.handleChange}
+                          value={this.state.role}
+                          required
+                          placeholder="Jabatan"
+                        />
+                      </FormGroup>
                     </Col>
                     <Col xs="4" md="4">
-                      <Input
-                        type="text"
-                        name="txt_tanggal_mulai"
-                        onChange={this.handleChange}
-                        value={this.state.txt_tanggal_mulai}
-                        required
-                        placeholder="Tanggal Mulai"
-                      />
+                      <FormGroup>
+                        <Label htmlFor="employee-name">Gaji Pokok</Label>
+                        <Input
+                          type="number"
+                          name="primarySalary"
+                          onChange={this.handleChange}
+                          value={this.state.primarySalary}
+                          required
+                          placeholder="Gaji Pokok"
+                        />
+                      </FormGroup>
                     </Col>
-                  </FormGroup>
+                    <Col xs="4" md="4">
+                      <FormGroup>
+                        <Label htmlFor="employee-name">Uang Harian</Label>
+                        <Input
+                          type="number"
+                          name="dailyAllowance"
+                          onChange={this.handleChange}
+                          value={this.state.dailyAllowance}
+                          required
+                          placeholder="Uang Harian"
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                 </CardBody>
                 <CardFooter>
                   <Button type="submit" size="sm" color="primary">
                     <i className="fa fa-dot-circle-o"></i>{" "}
-                    {this.state.value_simpan}
+                    {this.state.actionSubmit}
                   </Button>
-                  <Button size="sm" color="danger" onClick={this.cancelClick}>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    onClick={this.actionStatus.bind(this, "")}
+                  >
                     <i className="fa fa-ban"></i> Cancel
                   </Button>
                 </CardFooter>
@@ -181,32 +445,43 @@ class Employees extends Component {
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Data Project
+                <i className="fa fa-align-justify"></i> Data Pegawai
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Kandang</th>
-                      <th>Periode</th>
-                      <th>Populasi Awal</th>
-                      <th>Tanggal Mulai</th>
-                      <th>Status</th>
+                      <th>Nama Pegawai</th>
+                      <th>Jenis</th>
+                      <th>Alamat</th>
                       <th>#</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.projects.map((row, index) => (
-                      <tr key={row.id}>
+                    {this.state.employees.map((employee, index) => (
+                      <tr key={employee._id}>
                         <td>{index + 1}</td>
-                        <td>{row.kandang.name}</td>
-                        <td>{row.periode}</td>
-                        <td>{row.populasi_awal}</td>
-                        <td>{row.tanggal_mulai}</td>
-                        <td>{this.statusProject(row.status)}</td>
+                        <td>{employee.name}</td>
+                        <td>{employee.field}</td>
+                        <td>{employee.address}</td>
                         <td>
-                          <Link to={this.linkDetailId(row.id)}>Detail</Link>
+                          <Button
+                            size="sm"
+                            color="danger"
+                            className="mb-2 mr-1"
+                            onClick={this.hapusClick.bind(this, employee._id)}
+                          >
+                            Hapus
+                          </Button>
+                          <Button
+                            size="sm"
+                            color="success"
+                            className="mb-2 mr-1"
+                            onClick={this.actionStatus.bind(this, employee._id)}
+                          >
+                            Edit
+                          </Button>
                         </td>
                       </tr>
                     ))}
