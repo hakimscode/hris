@@ -281,7 +281,7 @@ class Bonuses extends Component {
                             className="mb-2 mr-1"
                             onClick={this.hapusClick.bind(this, bonus._id)}
                           >
-                            Hapus
+                            <i className="fa fa-trash"></i>&nbsp;Hapus
                           </Button>
                           <Button
                             size="sm"
@@ -289,7 +289,7 @@ class Bonuses extends Component {
                             className="mb-2 mr-1"
                             onClick={this.actionStatus.bind(this, bonus._id)}
                           >
-                            Edit
+                            <i className="fa fa-pencil"></i>&nbsp;Edit
                           </Button>
                         </td>
                       </tr>

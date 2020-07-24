@@ -446,15 +446,19 @@ class Employees extends Component {
             <Card>
               <CardHeader>
                 <i className="fa fa-align-justify"></i> Data Pegawai
+                <Button className="btn btn-sm btn-success float-right mb-0">
+                  <i className="fa fa-plus-circle"></i>&nbsp;Tambah
+                </Button>
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
+                      <th>Perusahaan</th>
                       <th>Nama Pegawai</th>
-                      <th>Jenis</th>
-                      <th>Alamat</th>
+                      <th>Departemen</th>
+                      <th>Jabatan</th>
                       <th>#</th>
                     </tr>
                   </thead>
@@ -462,25 +466,18 @@ class Employees extends Component {
                     {this.state.employees.map((employee, index) => (
                       <tr key={employee._id}>
                         <td>{index + 1}</td>
-                        <td>{employee.name}</td>
-                        <td>{employee.field}</td>
-                        <td>{employee.address}</td>
+                        <td>{employee.companyId}</td>
+                        <td>{employee.profile.name}</td>
+                        <td>{employee.position.department}</td>
+                        <td>{employee.position.role}</td>
                         <td>
                           <Button
                             size="sm"
-                            color="danger"
+                            color="info"
                             className="mb-2 mr-1"
                             onClick={this.hapusClick.bind(this, employee._id)}
                           >
-                            Hapus
-                          </Button>
-                          <Button
-                            size="sm"
-                            color="success"
-                            className="mb-2 mr-1"
-                            onClick={this.actionStatus.bind(this, employee._id)}
-                          >
-                            Edit
+                            <i className="fa fa-info-circle"></i>&nbsp;Detail
                           </Button>
                         </td>
                       </tr>
