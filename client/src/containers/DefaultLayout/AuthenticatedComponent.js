@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
-import Axios from "axios";
+import { compareAsc } from "date-fns";
 
 export class AuthenticatedComponent extends Component {
   constructor() {
@@ -9,27 +9,23 @@ export class AuthenticatedComponent extends Component {
       user: {
         id: "",
         nama_lengkap: "",
-        username: ""
+        username: "",
       },
       username: null,
-      password: null
+      password: null,
     };
   }
 
   componentDidMount() {
     const jwt = localStorage.getItem("jwt-token-hris");
-    if (!jwt) {
+
+    const isTokenExpired = compareAsc(
+      Math.floor(Date.now() / 1000),
+      parseInt(localStorage.getItem("token-expired"))
+    );
+
+    if (!jwt || isTokenExpired === 1) {
       this.props.history.push("/login");
-    } else {
-      Axios.get(
-        "https://api.fawwazlab.com/lapor/api/user/get_user_by_token/" + jwt
-      ).then(res => {
-        if (res.data.id === 0) {
-          this.props.history.push("/login");
-        } else {
-          this.setState({ user: res.data });
-        }
-      });
     }
   }
 

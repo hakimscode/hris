@@ -11,9 +11,11 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Row
+  Row,
 } from "reactstrap";
 import Axios from "axios";
+import { compareAsc } from "date-fns";
+import JwtDecode from "jwt-decode";
 
 class Login extends Component {
   constructor() {
@@ -21,29 +23,31 @@ class Login extends Component {
 
     this.state = {
       txt_username: "",
-      txt_password: ""
+      txt_password: "",
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
     Axios.post("http://localhost:5001/auth/login", {
       username: this.state.txt_username,
-      password: this.state.txt_password
-    }).then(res => {
+      password: this.state.txt_password,
+    }).then((res) => {
       console.log(res);
-      if (res.status === 201 && res.status && res.data.access_token) {
-        alert("Berhasil Login");
+      if (res.status === 201 && res.data.access_token) {
+        const decodedToken = JwtDecode(res.data.access_token);
         localStorage.setItem("jwt-token-hris", res.data.access_token);
+        localStorage.setItem("token-expired", decodedToken.exp.toString());
+        alert("Berhasil Login");
         this.props.history.push("/");
       }
     });
@@ -51,7 +55,13 @@ class Login extends Component {
 
   componentDidMount() {
     const jwt = localStorage.getItem("jwt-token-hris");
-    if (jwt) {
+
+    const isTokenExpired = compareAsc(
+      Math.floor(Date.now() / 1000),
+      parseInt(localStorage.getItem("token-expired"))
+    );
+
+    if (jwt && isTokenExpired !== 1) {
       this.props.history.push("/");
     }
   }
@@ -116,7 +126,8 @@ class Login extends Component {
                     <div>
                       <h2>Human Resource Information System</h2>
                       <p>
-                        Pengelola informasi karyawan pada yayasan Ubudiyah Indonesia
+                        Pengelola informasi karyawan pada yayasan Ubudiyah
+                        Indonesia
                       </p>
                     </div>
                   </CardBody>
