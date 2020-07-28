@@ -72,7 +72,7 @@ class Employees extends Component {
                     {this.state.employees.map((employee, index) => (
                       <tr key={employee._id}>
                         <td>{index + 1}</td>
-                        <td>{employee.companyId}</td>
+                        <td>{employee.company.name}</td>
                         <td>{employee.profile.name}</td>
                         <td>{employee.position.department}</td>
                         <td>{employee.position.role}</td>

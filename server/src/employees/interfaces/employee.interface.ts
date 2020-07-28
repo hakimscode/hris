@@ -1,8 +1,8 @@
-import { Document } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 
 export interface Employee extends Document {
   userId: string;
-  companyId: string;
+  company: Schema.Types.ObjectId;
   profile: {
     idCardNumber: string;
     name: string;

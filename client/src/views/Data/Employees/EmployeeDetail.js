@@ -21,7 +21,7 @@ class EmployeeDetail extends Component {
     this.employeeId = this.props.match.params.employeeId;
 
     this.state = {
-      companyId: "",
+      company: {},
       idNumber: "",
       name: "",
       address: "",
@@ -48,7 +48,7 @@ class EmployeeDetail extends Component {
         },
       })
       .then((res) => {
-        const companyId = res.data.data.companyId;
+        const company = res.data.data.company;
         const {
           idCardNumber,
           name,
@@ -63,7 +63,7 @@ class EmployeeDetail extends Component {
         const { primarySalary, dailyAllowance } = res.data.data.salary;
 
         this.setState({
-          companyId,
+          company,
           idNumber: idCardNumber,
           name,
           address,
@@ -130,7 +130,7 @@ class EmployeeDetail extends Component {
                   <Col xs="6" lg="6">
                     <ListGroup>
                       <ListGroupItem>
-                        Perusahaan : <strong>{this.state.companyId}</strong>
+                        Perusahaan : <strong>{this.state.company.name}</strong>
                       </ListGroupItem>
                       <ListGroupItem>
                         NIK : <strong>{this.state.idNumber}</strong>

@@ -25,7 +25,7 @@ class EmployeeForm extends Component {
       companies: [],
       employeeId: "",
 
-      companyId: "",
+      company: "",
       idNumber: "",
       name: "",
       address: "",
@@ -69,7 +69,8 @@ class EmployeeForm extends Component {
           },
         })
         .then((res) => {
-          const companyId = res.data.data.companyId;
+          const company = res.data.data.company._id;
+          console.log(company);
           const {
             idCardNumber,
             name,
@@ -86,7 +87,7 @@ class EmployeeForm extends Component {
           this.setState({
             employeeId,
 
-            companyId,
+            company,
             idNumber: idCardNumber,
             name,
             address,
@@ -119,7 +120,7 @@ class EmployeeForm extends Component {
 
   resetForm = () => {
     this.setState({
-      companyId: "",
+      company: "",
       idNumber: "",
       name: "",
       address: "",
@@ -139,7 +140,7 @@ class EmployeeForm extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const {
-      companyId,
+      company,
       idNumber,
       name,
       address,
@@ -163,7 +164,7 @@ class EmployeeForm extends Component {
         .post(
           this.API_URL,
           {
-            companyId,
+            company,
             idCardNumber: idNumber,
             name,
             address,
@@ -200,7 +201,7 @@ class EmployeeForm extends Component {
         .patch(
           this.API_URL + "/" + this.state.employeeId,
           {
-            companyId,
+            company,
             idCardNumber: idNumber,
             name,
             address,
@@ -390,9 +391,9 @@ class EmployeeForm extends Component {
                         <Label htmlFor="employee-name">Perusahaan</Label>
                         <Input
                           type="select"
-                          name="companyId"
+                          name="company"
                           onChange={this.handleChange}
-                          value={this.state.companyId}
+                          value={this.state.company}
                           required
                         >
                           <option value="">-- pilih perusahaan --</option>

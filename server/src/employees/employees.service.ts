@@ -17,7 +17,9 @@ export class EmployeesService {
   ) {}
 
   async getEmployees(): Promise<ResponseDto> {
-    const employees: Employee[] = await this.EmployeeModel.find().exec();
+    const employees: Employee[] = await this.EmployeeModel.find()
+      .populate('company', 'name')
+      .exec();
     if (!employees.length) {
       const response = new ResponseDto(
         HttpStatus.NOT_FOUND,
@@ -42,7 +44,7 @@ export class EmployeesService {
     const userId = newUser.id;
 
     const {
-      companyId,
+      company,
       phoneNumber,
       email,
       department,
@@ -58,7 +60,7 @@ export class EmployeesService {
 
     const newEmployee: Employee = new this.EmployeeModel({
       userId,
-      companyId,
+      company,
       profile,
       contact,
       position,
@@ -69,15 +71,14 @@ export class EmployeesService {
 
     return new ResponseDto(
       HttpStatus.CREATED,
-      'Employee has been submitted successfully',
-      newEmployee
+      'Employee has been submitted successfully'
     );
   }
 
   async getEmployee(employeeId: string): Promise<ResponseDto> {
-    const employee: Employee = await this.EmployeeModel.findById(
-      employeeId
-    ).exec();
+    const employee: Employee = await this.EmployeeModel.findById(employeeId)
+      .populate('company', 'name')
+      .exec();
 
     if (!employee) {
       const response = new ResponseDto(
@@ -95,7 +96,7 @@ export class EmployeesService {
     updateEmployeeDto: UpdateEmployeeDto
   ): Promise<ResponseDto> {
     const {
-      companyId,
+      company,
       phoneNumber,
       email,
       department,
@@ -112,7 +113,7 @@ export class EmployeesService {
     const updatedEmployee: Employee = await this.EmployeeModel.findByIdAndUpdate(
       employeeId,
       {
-        companyId,
+        company,
         profile,
         contact,
         position,
