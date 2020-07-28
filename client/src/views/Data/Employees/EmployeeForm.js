@@ -103,7 +103,7 @@ class EmployeeForm extends Component {
         .catch((err) => {
           console.log(err);
           alert("Data tidak ada");
-          // this.props.history.push("/data/employees");
+          this.props.history.push("/data/employees");
         });
     }
   }

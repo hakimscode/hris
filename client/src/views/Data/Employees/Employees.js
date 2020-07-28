@@ -41,27 +41,6 @@ class Employees extends Component {
       .catch((err) => console.log(err));
   }
 
-  hapusClick = (employeeId) => {
-    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios
-        .delete(this.API_URL + "/" + employeeId, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-          },
-        })
-        .then(() => {
-          this.setState({
-            employees: [
-              ...this.state.employees.filter(
-                (employee) => employee._id !== employeeId
-              ),
-            ],
-          });
-        })
-        .catch((err) => console.log(err));
-    }
-  };
-
   render() {
     return (
       <div className="animated fadeIn">
