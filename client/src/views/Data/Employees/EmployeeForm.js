@@ -23,15 +23,16 @@ class EmployeeForm extends Component {
 
     this.state = {
       companies: [],
+      employeeId: "",
 
       companyId: "",
       idNumber: "",
       name: "",
       address: "",
-      gender: "",
+      gender: "Laki-laki",
       placeOfBirth: "",
       dateOfBirth: "",
-      maritalStatus: "",
+      maritalStatus: "Single",
       phoneNumber: "",
       email: "",
       department: "",
@@ -83,6 +84,8 @@ class EmployeeForm extends Component {
           const { primarySalary, dailyAllowance } = res.data.data.salary;
 
           this.setState({
+            employeeId,
+
             companyId,
             idNumber: idCardNumber,
             name,
@@ -133,38 +136,49 @@ class EmployeeForm extends Component {
     });
   };
 
-  actionStatus = (employeeId) => {
-    if (employeeId !== "") {
-      axios
-        .get(this.API_URL + "/" + employeeId, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-          },
-        })
-        .then((res) => {
-          this.setState({
-            selectedId: employeeId,
-            name: res.data.data.name,
-            field: res.data.data.field,
-            address: res.data.data.address,
-          });
-        })
-        .catch((err) => console.log(err));
-    } else {
-      this.resetForm();
-    }
-  };
-
   handleSubmit = (e) => {
     e.preventDefault();
+    const {
+      companyId,
+      idNumber,
+      name,
+      address,
+      gender,
+      placeOfBirth,
+      dateOfBirth,
+      maritalStatus,
+      phoneNumber,
+      email,
+      department,
+      role,
+      primarySalary,
+      dailyAllowance,
+    } = this.state;
+
+    const arrName = name.split(" ");
+    const userLogin = arrName[0];
+
     if (this.state.actionSubmit === "Simpan") {
       axios
         .post(
           this.API_URL,
           {
-            name: this.state.name,
-            field: this.state.field,
-            address: this.state.address,
+            companyId,
+            idCardNumber: idNumber,
+            name,
+            address,
+            gender,
+            placeOfBirth,
+            dateOfBirth,
+            maritalStatus,
+            phoneNumber,
+            email,
+            department,
+            role,
+            primarySalary: parseInt(primarySalary),
+            dailyAllowance: parseInt(dailyAllowance),
+            username: `employee_${userLogin}`,
+            password: `employee_${userLogin}`,
           },
           {
             headers: {
@@ -174,26 +188,34 @@ class EmployeeForm extends Component {
         )
         .then((res) => {
           if (res.status === 201) {
-            this.setState({
-              employees: [...this.state.employees, res.data.data],
-            });
-            this.resetForm();
+            alert("Data berhasil disimpan");
+            this.props.history.push("/data/employees");
           } else {
             console.log("error");
           }
         })
-        .catch((err) => {
-          console.log(err.message);
-          console.log(this.state);
-        });
+        .catch((err) => console.log(err));
     } else {
       axios
         .patch(
-          this.API_URL + "/" + this.state.selectedId,
+          this.API_URL + "/" + this.state.employeeId,
           {
-            name: this.state.name,
-            field: this.state.field,
-            address: this.state.address,
+            companyId,
+            idCardNumber: idNumber,
+            name,
+            address,
+            gender,
+            placeOfBirth,
+            dateOfBirth,
+            maritalStatus,
+            phoneNumber,
+            email,
+            department,
+            role,
+            primarySalary: parseInt(primarySalary),
+            dailyAllowance: parseInt(dailyAllowance),
+            username: `employee_${userLogin}`,
+            password: `employee_${userLogin}`,
           },
           {
             headers: {
@@ -203,18 +225,8 @@ class EmployeeForm extends Component {
         )
         .then((res) => {
           if (res.status === 202) {
-            this.setState({
-              employees: this.state.employees.map((employee) => {
-                if (employee._id === res.data.data._id) {
-                  employee.name = res.data.data.name;
-                  employee.field = res.data.data.field;
-                  employee.address = res.data.data.address;
-                }
-                return employee;
-              }),
-            });
-
-            this.resetForm();
+            alert("Data berhasil diedit");
+            this.props.history.push("/data/employees");
           } else {
             console.log("error");
           }
@@ -454,11 +466,7 @@ class EmployeeForm extends Component {
                     <i className="fa fa-dot-circle-o"></i>{" "}
                     {this.state.actionSubmit}
                   </Button>
-                  <Button
-                    size="sm"
-                    color="danger"
-                    onClick={this.actionStatus.bind(this, "")}
-                  >
+                  <Button size="sm" color="danger" onClick={this.resetForm}>
                     <i className="fa fa-ban"></i> Cancel
                   </Button>
                 </CardFooter>

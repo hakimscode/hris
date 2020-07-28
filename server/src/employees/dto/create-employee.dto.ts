@@ -17,10 +17,6 @@ export class CreateEmployeeDto {
   @IsNotEmpty()
   gender: string;
 
-  @IsNumber()
-  @IsNotEmpty()
-  age: number;
-
   @IsString()
   @IsNotEmpty()
   placeOfBirth: string;

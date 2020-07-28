@@ -8,7 +8,6 @@ export interface Employee extends Document {
     name: string;
     address: string;
     gender: string;
-    age: number;
     placeOfBirth: string;
     dateOfBirth: string;
     maritalStatus: string;

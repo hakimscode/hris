@@ -13,9 +13,6 @@ export class UpdateEmployeeDto {
   @IsString()
   gender: string;
 
-  @IsNumber()
-  age: number;
-
   @IsString()
   placeOfBirth: string;
 
