@@ -14,7 +14,11 @@ export class PayrollsService {
 
   async getPayrolls(): Promise<ResponseDto> {
     const payrolls: Payroll[] = await this.PayrollModel.find()
-      .populate('employee', 'profile.name')
+      .populate({
+        path: 'employee',
+        select: ['profile.name', 'position.department'],
+        populate: { path: 'company', select: 'name' }
+      })
       .exec();
 
     if (!payrolls.length) {

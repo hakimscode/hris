@@ -67,6 +67,8 @@ class Payrolls extends Component {
                       <th>No</th>
                       <th>Periode</th>
                       <th>Tanggal</th>
+                      <th>Perusahaan</th>
+                      <th>Departemen</th>
                       <th>Pegawai</th>
                       <th>Total Gaji</th>
                       <th>Gaji Diterima</th>
@@ -79,7 +81,9 @@ class Payrolls extends Component {
                         <td>{index + 1}</td>
                         <td>{payroll.period}</td>
                         <td>{payroll.date}</td>
-                        <td>{payroll.employeeId}</td>
+                        <td>{payroll.employee.company.name}</td>
+                        <td>{payroll.employee.position.department}</td>
+                        <td>{payroll.employee.profile.name}</td>
                         <td>{this.countSalary(payroll, false)}</td>
                         <td>{this.countSalary(payroll, true)}</td>
                         <td>
