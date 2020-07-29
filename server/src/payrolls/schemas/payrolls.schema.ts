@@ -1,7 +1,7 @@
 import * as monggose from 'mongoose';
 
 export const PayrollsSchema = new monggose.Schema({
-  employeeId: String,
+  employee: { type: monggose.Schema.Types.ObjectId, ref: 'Employee' },
   period: String,
   date: String,
   benefitSalary: Object,

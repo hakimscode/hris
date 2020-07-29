@@ -1,7 +1,7 @@
-import { Document } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 
 export interface Payroll extends Document {
-  employeeId: String;
+  employee: Schema.Types.ObjectId;
   period: String;
   date: String;
   benefitSalary: [

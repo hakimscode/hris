@@ -1,9 +1,10 @@
 import { IsString, IsNotEmpty, IsArray } from 'class-validator';
+import { Schema } from 'mongoose';
 
 export class CreatePayrollDto {
   @IsString()
   @IsNotEmpty()
-  employeeId: string;
+  employee: Schema.Types.ObjectId;
 
   @IsString()
   @IsNotEmpty()

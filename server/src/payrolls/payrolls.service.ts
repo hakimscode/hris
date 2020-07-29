@@ -13,7 +13,9 @@ export class PayrollsService {
   ) {}
 
   async getPayrolls(): Promise<ResponseDto> {
-    const payrolls: Payroll[] = await this.PayrollModel.find().exec();
+    const payrolls: Payroll[] = await this.PayrollModel.find()
+      .populate('employee', 'profile.name')
+      .exec();
 
     if (!payrolls.length) {
       const response = new ResponseDto(
@@ -35,8 +37,7 @@ export class PayrollsService {
 
     return new ResponseDto(
       HttpStatus.CREATED,
-      'Payroll has been submitted successfuuly',
-      newPayroll
+      'Payroll has been submitted successfuuly'
     );
   }
 }
