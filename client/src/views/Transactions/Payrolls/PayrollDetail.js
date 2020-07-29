@@ -11,6 +11,7 @@ import {
   // Button,
 } from "reactstrap";
 import axios from "axios";
+import currencyFormat from "../../../shared/currencyFormat";
 // import { Link } from "react-router-dom";
 
 class PayrollDetail extends Component {
@@ -96,11 +97,6 @@ class PayrollDetail extends Component {
       });
   }
 
-  currencyFormat = new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  });
-
   render() {
     return (
       <div className="animated fadeIn">
@@ -167,7 +163,7 @@ class PayrollDetail extends Component {
                           <tr>
                             <td>{salaryItem.name}</td>
                             <td align="right">
-                              {this.currencyFormat.format(salaryItem.amount)}
+                              {currencyFormat.format(salaryItem.amount)}
                             </td>
                           </tr>
                         ))}
@@ -181,7 +177,7 @@ class PayrollDetail extends Component {
                           <tr>
                             <td>{salaryItem.name}</td>
                             <td align="right">
-                              {this.currencyFormat.format(salaryItem.amount)}
+                              {currencyFormat.format(salaryItem.amount)}
                             </td>
                           </tr>
                         ))}
@@ -197,9 +193,7 @@ class PayrollDetail extends Component {
                           </td>
                           <td align="right">
                             <strong>
-                              {this.currencyFormat.format(
-                                this.state.totalSalary
-                              )}
+                              {currencyFormat.format(this.state.totalSalary)}
                             </strong>
                           </td>
                         </tr>
@@ -209,7 +203,7 @@ class PayrollDetail extends Component {
                           </td>
                           <td align="right">
                             <strong>
-                              {this.currencyFormat.format(this.state.totalCuts)}
+                              {currencyFormat.format(this.state.totalCuts)}
                             </strong>
                           </td>
                         </tr>
@@ -219,7 +213,7 @@ class PayrollDetail extends Component {
                           </td>
                           <td align="right">
                             <strong>
-                              {this.currencyFormat.format(this.state.netSalary)}
+                              {currencyFormat.format(this.state.netSalary)}
                             </strong>
                           </td>
                         </tr>

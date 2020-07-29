@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import currencyFormat from "../../../shared/currencyFormat";
 
 class Payrolls extends Component {
   constructor(props) {
@@ -42,7 +43,7 @@ class Payrolls extends Component {
 
     const salaryTotal = benefitTotal - cutTotal;
 
-    return salaryTotal;
+    return currencyFormat.format(salaryTotal);
   };
 
   render() {
