@@ -1,5 +1,5 @@
 /* eslint-disable no-empty-function */
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Param } from '@nestjs/common';
 import { UseRoles, ACGuard } from 'nest-access-control';
 import { AuthGuard } from '@nestjs/passport';
 import { PayrollsService } from './payrolls.service';
@@ -18,6 +18,17 @@ export class PayrollsController {
   })
   async getPayrolls() {
     return this.payrollService.getPayrolls();
+  }
+
+  @Get(':payrollId')
+  @UseGuards(AuthGuard('jwt'), ACGuard)
+  @UseRoles({
+    action: 'read',
+    possession: 'any',
+    resource: 'payroll'
+  })
+  async getPayroll(@Param('payrollId') payrollId: string) {
+    return this.payrollService.getPayroll(payrollId);
   }
 
   @Post()

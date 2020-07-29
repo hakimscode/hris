@@ -33,6 +33,26 @@ export class PayrollsService {
     return new ResponseDto(HttpStatus.OK, 'Payrolls Found', payrolls);
   }
 
+  async getPayroll(payrollId): Promise<ResponseDto> {
+    const payroll: Payroll = await this.PayrollModel.findById(payrollId)
+      .populate({
+        path: 'employee',
+        select: ['profile.name', 'position.department', 'position.role'],
+        populate: { path: 'company', select: 'name' }
+      })
+      .exec();
+
+    if (!payroll) {
+      const response = new ResponseDto(
+        HttpStatus.NOT_FOUND,
+        'Payroll does not exist'
+      );
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return new ResponseDto(HttpStatus.OK, 'Payroll Found', payroll);
+  }
+
   async createPayroll(
     createPayrollDto: CreatePayrollDto
   ): Promise<ResponseDto> {

@@ -88,7 +88,7 @@ class Payrolls extends Component {
                         <td>{this.countSalary(payroll, true)}</td>
                         <td>
                           <Link
-                            to={`/data/employee/${payroll._id}`}
+                            to={`/transactions/payroll/${payroll._id}`}
                             className="btn btn-sm btn-info"
                           >
                             <i className="fa fa-info-circle"></i>&nbsp;Detail

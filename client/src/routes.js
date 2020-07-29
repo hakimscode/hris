@@ -1,10 +1,5 @@
 import React from "react";
 const Dashboard = React.lazy(() => import("./views/Dashboard"));
-const Laporan = React.lazy(() => import("./views/Data/Laporan"));
-
-const KategoriProduk = React.lazy(() =>
-  import("./views/Data/KategoriProduk/KategoriProduk")
-);
 const Bonuses = React.lazy(() => import("./views/Master/Bonuses/Bonuses"));
 const Allowances = React.lazy(() =>
   import("./views/Master/Allowances/Allowances")
@@ -24,21 +19,13 @@ const EmployeeDetail = React.lazy(() =>
 const Payrolls = React.lazy(() =>
   import("./views/Transactions/Payrolls/Payrolls")
 );
-const Penjualan = React.lazy(() =>
-  import("./views/Transactions/Penjualan/Penjualan")
+const PayrollDetail = React.lazy(() =>
+  import("./views/Transactions/Payrolls/PayrollDetail")
 );
 
-// https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home" },
   { path: "/dashboard", name: "Dashboard", component: Dashboard },
-  { path: "/data", exact: true, name: "Data", component: Laporan },
-  { path: "/data/laporan", exact: true, name: "Laporan", component: Laporan },
-  {
-    path: "/data/KategoriProduk/",
-    name: "Kategori Produk",
-    component: KategoriProduk,
-  },
   {
     path: "/master/bonuses/",
     name: "Bonus",
@@ -91,12 +78,14 @@ const routes = [
   {
     path: "/transactions/payrolls",
     name: "Payrolls",
+    exact: true,
     component: Payrolls,
   },
   {
-    path: "/transactions/Penjualan",
-    name: "Penjualan",
-    component: Penjualan,
+    path: "/transactions/payroll/:payrollId",
+    name: "Detail Payroll",
+    exact: true,
+    component: PayrollDetail,
   },
 ];
 
