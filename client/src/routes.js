@@ -22,6 +22,9 @@ const Payrolls = React.lazy(() =>
 const PayrollDetail = React.lazy(() =>
   import("./views/Transactions/Payrolls/PayrollDetail")
 );
+const PayrollForm = React.lazy(() =>
+  import("./views/Transactions/Payrolls/PayrollForm")
+);
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -80,6 +83,12 @@ const routes = [
     name: "Payrolls",
     exact: true,
     component: Payrolls,
+  },
+  {
+    path: "/transactions/payroll/add",
+    name: "Tambah Payroll",
+    exact: true,
+    component: PayrollForm,
   },
   {
     path: "/transactions/payroll/:payrollId",

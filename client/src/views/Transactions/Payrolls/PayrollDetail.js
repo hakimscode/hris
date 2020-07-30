@@ -159,8 +159,8 @@ class PayrollDetail extends Component {
                   <Col xs="4" lg="4">
                     <Table responsive>
                       <tbody>
-                        {this.state.benefitSalary.map((salaryItem) => (
-                          <tr>
+                        {this.state.benefitSalary.map((salaryItem, index) => (
+                          <tr key={index + 1}>
                             <td>{salaryItem.name}</td>
                             <td align="right">
                               {currencyFormat.format(salaryItem.amount)}
@@ -173,8 +173,8 @@ class PayrollDetail extends Component {
                   <Col xs="4" lg="4">
                     <Table responsive>
                       <tbody>
-                        {this.state.cutSalary.map((salaryItem) => (
-                          <tr>
+                        {this.state.cutSalary.map((salaryItem, index) => (
+                          <tr key={index + 1}>
                             <td>{salaryItem.name}</td>
                             <td align="right">
                               {currencyFormat.format(salaryItem.amount)}

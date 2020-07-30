@@ -55,7 +55,7 @@ class Payrolls extends Component {
               <CardHeader>
                 <i className="fa fa-align-justify"></i> Data Payrolls
                 <Link
-                  to="/data/employee/add"
+                  to="/transactions/payroll/add"
                   className="btn btn-sm btn-success float-right mb-0"
                 >
                   <i className="fa fa-plus-circle"></i>&nbsp;Tambah

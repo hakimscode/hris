@@ -32,9 +32,8 @@ export class SalaryComponentsController {
     resource: 'salaryComponent'
   })
   async getSalaryComponents(@Query() query: FindSalaryComponentRequestDto) {
-    return this.SalaryComponentsServices.getSalaryComponents(
-      query.componentType
-    );
+    const componentType = query.componentType ? query.componentType : '';
+    return this.SalaryComponentsServices.getSalaryComponents(componentType);
   }
 
   @Post()

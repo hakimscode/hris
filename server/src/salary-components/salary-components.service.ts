@@ -15,9 +15,14 @@ export class SalaryComponentsService {
   ) {}
 
   async getSalaryComponents(componentType: string): Promise<ResponseDto> {
-    const SalaryComponents: SalaryComponent[] = await this.SalaryComponentModel.find(
-      { componentType }
-    ).exec();
+    let SalaryComponents: SalaryComponent[];
+    if (componentType === '') {
+      SalaryComponents = await this.SalaryComponentModel.find().exec();
+    } else {
+      SalaryComponents = await this.SalaryComponentModel.find({
+        componentType
+      }).exec();
+    }
 
     if (!SalaryComponents.length) {
       const response = new ResponseDto(
