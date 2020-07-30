@@ -11,6 +11,7 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import currencyFormat from "../../../shared/currencyFormat";
 
 class EmployeeDetail extends Component {
   constructor(props) {
@@ -187,11 +188,15 @@ class EmployeeDetail extends Component {
                         <ListGroup>
                           <ListGroupItem>
                             Gaji Utama :{" "}
-                            <strong>{this.state.primarySalary}</strong>
+                            <strong>
+                              {currencyFormat.format(this.state.primarySalary)}
+                            </strong>
                           </ListGroupItem>
                           <ListGroupItem>
                             Uang Harian :{" "}
-                            <strong>{this.state.dailyAllowance}</strong>
+                            <strong>
+                              {currencyFormat.format(this.state.dailyAllowance)}
+                            </strong>
                           </ListGroupItem>
                         </ListGroup>
                       </Col>
