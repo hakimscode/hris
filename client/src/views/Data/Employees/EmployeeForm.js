@@ -70,7 +70,6 @@ class EmployeeForm extends Component {
         })
         .then((res) => {
           const company = res.data.data.company._id;
-          console.log(company);
           const {
             idCardNumber,
             name,

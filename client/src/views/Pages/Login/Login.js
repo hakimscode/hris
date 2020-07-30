@@ -42,7 +42,6 @@ class Login extends Component {
       username: this.state.txt_username,
       password: this.state.txt_password,
     }).then((res) => {
-      console.log(res);
       if (res.status === 201 && res.data.access_token) {
         const decodedToken = JwtDecode(res.data.access_token);
         localStorage.setItem("jwt-token-hris", res.data.access_token);
