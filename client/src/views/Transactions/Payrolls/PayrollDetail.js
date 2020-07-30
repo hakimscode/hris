@@ -1,18 +1,8 @@
 import React, { Component } from "react";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Row,
-  ListGroup,
-  ListGroupItem,
-  Table,
-  // Button,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row, Button } from "reactstrap";
 import axios from "axios";
-import currencyFormat from "../../../shared/currencyFormat";
-// import { Link } from "react-router-dom";
+import ReactToPrint from "react-to-print";
+import PayrollSlip from "./PayrollSlip";
 
 class PayrollDetail extends Component {
   constructor(props) {
@@ -105,122 +95,26 @@ class PayrollDetail extends Component {
             <Card>
               <CardHeader>
                 <i className="fa fa-align-justify"></i>Data Payroll
-                {/* <Button
-                  size="sm"
-                  color="danger"
-                  className="float-right mb-0 ml-1"
-                  onClick={this.hapusClick.bind(this, this.payrollId)}
-                >
-                  <i className="fa fa-trash"></i>&nbsp;Hapus
-                </Button>
-                <Link
-                  to={`/data/payroll/${this.payrollId}/edit`}
-                  className="btn btn-sm btn-warning float-right mb-0"
-                >
-                  <i className="fa fa-pencil"></i>&nbsp;Edit
-                </Link> */}
+                <ReactToPrint
+                  trigger={() => {
+                    return (
+                      <Button
+                        size="sm"
+                        className="btn btn-sm btn-success float-right mb-0"
+                        title="Print"
+                      >
+                        <i className="fa fa-print"></i>
+                      </Button>
+                    );
+                  }}
+                  content={() => this.componentRef}
+                />
               </CardHeader>
               <CardBody>
-                <Row>
-                  <Col xs="6" lg="6">
-                    <ListGroup>
-                      <ListGroupItem>
-                        Perusahaan :{" "}
-                        <strong>{this.state.employee.company.name}</strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        Periode : <strong>{this.state.period}</strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        Tanggal : <strong>{this.state.date}</strong>
-                      </ListGroupItem>
-                    </ListGroup>
-                  </Col>
-                  <Col xs="6" lg="6">
-                    <ListGroup>
-                      <ListGroupItem>
-                        Nama Pegawai :{" "}
-                        <strong>{this.state.employee.profile.name}</strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        Departemen :{" "}
-                        <strong>
-                          {this.state.employee.position.department}
-                        </strong>
-                      </ListGroupItem>
-                      <ListGroupItem>
-                        Jabatan :{" "}
-                        <strong>{this.state.employee.position.role}</strong>
-                      </ListGroupItem>
-                    </ListGroup>
-                  </Col>
-                </Row>
-                <Row className="pt-4">
-                  <Col xs="4" lg="4">
-                    <Table responsive>
-                      <tbody>
-                        {this.state.benefitSalary.map((salaryItem, index) => (
-                          <tr key={index + 1}>
-                            <td>{salaryItem.name}</td>
-                            <td align="right">
-                              {currencyFormat.format(salaryItem.amount)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </Col>
-                  <Col xs="4" lg="4">
-                    <Table responsive>
-                      <tbody>
-                        {this.state.cutSalary.map((salaryItem, index) => (
-                          <tr key={index + 1}>
-                            <td>{salaryItem.name}</td>
-                            <td align="right">
-                              {currencyFormat.format(salaryItem.amount)}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </Col>
-                  <Col xs="4" lg="4">
-                    <Table responsive>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <strong>Total Gaji</strong>
-                          </td>
-                          <td align="right">
-                            <strong>
-                              {currencyFormat.format(this.state.totalSalary)}
-                            </strong>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong>Total Potongan</strong>
-                          </td>
-                          <td align="right">
-                            <strong>
-                              {currencyFormat.format(this.state.totalCuts)}
-                            </strong>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <strong>Gaji Diterima</strong>
-                          </td>
-                          <td align="right">
-                            <strong>
-                              {currencyFormat.format(this.state.netSalary)}
-                            </strong>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </Col>
-                </Row>
+                <PayrollSlip
+                  data={this.state}
+                  ref={(el) => (this.componentRef = el)}
+                ></PayrollSlip>
               </CardBody>
             </Card>
           </Col>
