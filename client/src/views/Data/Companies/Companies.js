@@ -19,7 +19,7 @@ class Companies extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5001/companies";
+    this.API_URL = process.env.REACT_APP_API_URL + "/companies";
 
     this.state = {
       companies: [],

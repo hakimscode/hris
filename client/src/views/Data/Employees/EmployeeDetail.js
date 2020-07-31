@@ -17,7 +17,7 @@ class EmployeeDetail extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5001/employees";
+    this.API_URL = process.env.REACT_APP_API_URL + "/employees";
 
     this.employeeId = this.props.match.params.employeeId;
 

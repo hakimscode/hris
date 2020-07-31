@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AccessControlModule } from 'nest-access-control';
 import { AppController } from './app.controller';
@@ -12,14 +13,13 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { PayrollsModule } from './payrolls/payrolls.module';
 import { roles } from './app.roles';
 
-const DB_HOST_HRIS = process.env.DB_HOST_HRIS
-  ? process.env.DB_HOST_HRIS
-  : 'localhost';
+const DB_HOST_HRIS = process.env.DB_HOST_HRIS;
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     AccessControlModule.forRoles(roles),
-    MongooseModule.forRoot(`mongodb://${DB_HOST_HRIS}:27017/hris`, {
+    MongooseModule.forRoot(DB_HOST_HRIS, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false

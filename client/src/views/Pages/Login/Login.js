@@ -38,7 +38,7 @@ class Login extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    Axios.post("http://localhost:5001/auth/login", {
+    Axios.post(process.env.REACT_APP_API_URL + "/auth/login", {
       username: this.state.txt_username,
       password: this.state.txt_password,
     }).then((res) => {

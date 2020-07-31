@@ -22,9 +22,10 @@ class PayrollForm extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5001/payrolls";
-    this.API_URL_EMPLOYEES = "http://localhost:5001/employees";
-    this.API_URL_SALARY_COMPONENTS = "http://localhost:5001/salary-components";
+    this.API_URL = process.env.REACT_APP_API_URL + "/payrolls";
+    this.API_URL_EMPLOYEES = process.env.REACT_APP_API_URL + "/employees";
+    this.API_URL_SALARY_COMPONENTS =
+      process.env.REACT_APP_API_URL + "/salary-components";
 
     this.state = {
       employees: [],

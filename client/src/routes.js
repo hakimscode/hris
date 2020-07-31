@@ -7,7 +7,6 @@ const Allowances = React.lazy(() =>
 const Deductions = React.lazy(() =>
   import("./views/Master/Deductions/Deductions")
 );
-const Kandangs = React.lazy(() => import("./views/Data/Kandangs/Kandangs"));
 const Companies = React.lazy(() => import("./views/Data/Companies/Companies"));
 const Employees = React.lazy(() => import("./views/Data/Employees/Employees"));
 const EmployeeForm = React.lazy(() =>
@@ -43,11 +42,6 @@ const routes = [
     path: "/master/deductions",
     name: "Potongan",
     component: Deductions,
-  },
-  {
-    path: "/data/Kandangs",
-    name: "Kandang",
-    component: Kandangs,
   },
   {
     path: "/data/companies",

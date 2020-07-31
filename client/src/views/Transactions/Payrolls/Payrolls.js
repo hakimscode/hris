@@ -8,7 +8,7 @@ class Payrolls extends Component {
   constructor(props) {
     super(props);
 
-    this.API_URL = "http://localhost:5001/payrolls";
+    this.API_URL = process.env.REACT_APP_API_URL + "/payrolls";
 
     this.state = {
       payrolls: [],
