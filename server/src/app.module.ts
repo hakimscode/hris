@@ -13,7 +13,10 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { PayrollsModule } from './payrolls/payrolls.module';
 import { roles } from './app.roles';
 
-const DB_HOST_HRIS = process.env.DB_HOST_HRIS;
+const DB_HOST_HRIS =
+  process.env.NODE_ENV === 'development'
+    ? 'mongodb://localhost:27017/hris'
+    : process.env.DB_HOST_HRIS;
 
 @Module({
   imports: [
