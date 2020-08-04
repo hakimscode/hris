@@ -219,8 +219,8 @@ class Admins extends Component {
                     {this.state.admins.map((admin, index) => (
                       <tr key={admin._id}>
                         <td>{index + 1}</td>
-                        <td>{admin.username}</td>
                         <td>{admin.company.name}</td>
+                        <td>{admin.username}</td>
                         <td>
                           <Button
                             size="sm"
