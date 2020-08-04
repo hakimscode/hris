@@ -39,7 +39,6 @@ class Companies extends Component {
   componentDidMount() {
     axios
       .get(this.API_URL, {
-        params: { componentType: this.state.componentType },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
         },

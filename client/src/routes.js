@@ -15,6 +15,9 @@ const EmployeeForm = React.lazy(() =>
 const EmployeeDetail = React.lazy(() =>
   import("./views/Data/Employees/EmployeeDetail")
 );
+
+const Admins = React.lazy(() => import("./views/Data/Admins/Admins"));
+
 const Payrolls = React.lazy(() =>
   import("./views/Transactions/Payrolls/Payrolls")
 );
@@ -71,6 +74,12 @@ const routes = [
     name: "Detail Pegawai",
     exact: true,
     component: EmployeeDetail,
+  },
+  {
+    path: "/data/admins",
+    name: "Admin",
+    exact: true,
+    component: Admins,
   },
   {
     path: "/transactions/payrolls",

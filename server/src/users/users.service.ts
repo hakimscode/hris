@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './interfaces/user.interface';
@@ -12,8 +12,28 @@ export class UsersService {
   // eslint-disable-next-line no-empty-function
   constructor(@InjectModel('User') private readonly UserModel: Model<User>) {}
 
+  async getAdmins(): Promise<ResponseDto> {
+    const admins: User[] = await this.UserModel.find({
+      userRole: 'Admin Company'
+    })
+      .populate('company')
+      .exec();
+
+    if (!admins.length) {
+      const response = new ResponseDto(
+        HttpStatus.NOT_FOUND,
+        'Admins does not exist'
+      );
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return new ResponseDto(HttpStatus.OK, 'Admins Found', admins);
+  }
+
   async getUser(username: string): Promise<User> {
-    const user = await this.UserModel.findOne({ username });
+    const user = await this.UserModel.findOne({ username })
+      .select('+password')
+      .exec();
     return user;
   }
 
@@ -27,9 +47,28 @@ export class UsersService {
     });
     await newUser.save();
 
+    const user = await this.UserModel.findById(newUser._id)
+      .populate('company')
+      .exec();
+
     return new ResponseDto(
       HttpStatus.CREATED,
-      'Users has been submitted successfully'
+      'Users has been submitted successfully',
+      user
     );
+  }
+
+  async deleteUser(userId: string): Promise<ResponseDto> {
+    const deletedUser = await this.UserModel.findByIdAndRemove(userId);
+
+    if (!deletedUser) {
+      const response = new ResponseDto(
+        HttpStatus.NOT_FOUND,
+        'User does not exist'
+      );
+      throw new HttpException(response, response.statusCode);
+    }
+
+    return new ResponseDto(HttpStatus.OK, 'User has been deleted successfully');
   }
 }

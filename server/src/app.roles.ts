@@ -12,13 +12,21 @@ roles
   .grant(AppRoles.ADMIN_ROLE)
   .createAny(['employee', 'salaryComponent', 'payroll', 'company', 'user'])
   .updateAny(['employee', 'salaryComponent', 'payroll', 'company'])
-  .readAny(['employee', 'salaryComponent', 'payroll', 'company', 'attendance'])
+  .readAny([
+    'employee',
+    'salaryComponent',
+    'payroll',
+    'company',
+    'attendance',
+    'user'
+  ])
   .deleteAny([
     'employee',
     'salaryComponent',
     'payroll',
     'company',
-    'attendance'
+    'attendance',
+    'user'
   ]);
 
 roles

@@ -43,6 +43,11 @@ export default {
       icon: "icon-people",
     },
     {
+      name: "Admin",
+      url: "/data/admins",
+      icon: "icon-user",
+    },
+    {
       title: true,
       name: "Transaction",
     },
