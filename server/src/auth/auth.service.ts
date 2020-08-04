@@ -30,7 +30,8 @@ export class AuthService {
       // eslint-disable-next-line no-underscore-dangle
       sub: user._id,
       username: user.username,
-      userRole: user.userRole
+      userRole: user.userRole,
+      company: user.company
     };
     return {
       access_token: this.jwtService.sign(payload)

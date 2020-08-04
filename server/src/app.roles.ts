@@ -29,18 +29,7 @@ roles
     'user'
   ]);
 
-roles
-  .grant(AppRoles.ADMIN_COMPANY_ROLE)
-  .createOwn(['employee', 'salaryComponent', 'payroll', 'company'])
-  .updateOwn(['employee', 'salaryComponent', 'payroll', 'company'])
-  .readOwn(['employee', 'salaryComponent', 'payroll', 'company', 'attendance'])
-  .deleteOwn([
-    'employee',
-    'salaryComponent',
-    'payroll',
-    'company',
-    'attendance'
-  ]);
+roles.grant(AppRoles.ADMIN_COMPANY_ROLE).extend(AppRoles.ADMIN_ROLE);
 
 roles
   .grant(AppRoles.EMPLOYEE_ROLE)
