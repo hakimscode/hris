@@ -6,10 +6,13 @@ import {
   Param,
   NotFoundException,
   Post,
-  Body
+  Body,
+  UseGuards
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ACGuard, UseRoles } from 'nest-access-control';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -26,8 +29,13 @@ export class UsersController {
   }
 
   @Post()
-  async creatUser(@Body() createUserDto: CreateUserDto){
+  @UseGuards(AuthGuard('jwt'), ACGuard)
+  @UseRoles({
+    action: 'create',
+    possession: 'any',
+    resource: 'user'
+  })
+  async creatUser(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
   }
-
 }

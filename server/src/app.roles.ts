@@ -10,7 +10,7 @@ export const roles: RolesBuilder = new RolesBuilder();
 
 roles
   .grant(AppRoles.ADMIN_ROLE)
-  .createAny(['employee', 'salaryComponent', 'payroll', 'company'])
+  .createAny(['employee', 'salaryComponent', 'payroll', 'company', 'user'])
   .updateAny(['employee', 'salaryComponent', 'payroll', 'company'])
   .readAny(['employee', 'salaryComponent', 'payroll', 'company', 'attendance'])
   .deleteAny([

@@ -17,15 +17,19 @@ export class UsersService {
     return user;
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<ResponseDto>{
-    const { username, password, userRole } = createUserDto;
+  async createUser(createUserDto: CreateUserDto): Promise<ResponseDto> {
+    const { username, password, userRole, company } = createUserDto;
     const newUser = new this.UserModel({
       username,
       password: await HashPassword(password),
-      userRole
+      userRole,
+      company
     });
     await newUser.save();
 
-    return new ResponseDto(HttpStatus.CREATED, 'Users has been submitted successfully');
+    return new ResponseDto(
+      HttpStatus.CREATED,
+      'Users has been submitted successfully'
+    );
   }
 }
