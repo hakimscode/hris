@@ -80,6 +80,7 @@ const routes = [
     name: "Admin",
     exact: true,
     component: Admins,
+    adminMenu: true,
   },
   {
     path: "/transactions/payrolls",

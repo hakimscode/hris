@@ -13,25 +13,57 @@ import {
   AppSidebarHeader,
   AppSidebarMinimizer,
   AppBreadcrumb2 as AppBreadcrumb,
-  AppSidebarNav2 as AppSidebarNav
+  AppSidebarNav2 as AppSidebarNav,
 } from "@coreui/react";
 // sidebar nav config
 import navigation from "../../_nav";
 // routes config
 import routes from "../../routes";
+import JwtDecode from "jwt-decode";
 
 const DefaultAside = React.lazy(() => import("./DefaultAside"));
 const DefaultFooter = React.lazy(() => import("./DefaultFooter"));
 const DefaultHeader = React.lazy(() => import("./DefaultHeader"));
 
 class DefaultLayout extends Component {
+  constructor(props) {
+    super(props);
+    this.navMenus = navigation;
+    this.routes = routes;
+  }
   loading = () => (
     <div className="animated fadeIn pt-1 text-center">Loading...</div>
   );
 
+  componentDidMount = () => {
+    const decodedToken = JwtDecode(localStorage.getItem("jwt-token-hris"));
+    const role = decodedToken.userRole.toString();
+
+    if (role !== "Admin") {
+      const menusAdmin = ["Admin"];
+      const items = [];
+      navigation.items.forEach((item) => {
+        if (!item.name.includes(menusAdmin)) items.push(item);
+      });
+      this.navMenus = { items };
+
+      const authRoutes = [];
+      routes.forEach((route) => {
+        if (!route.adminMenu) {
+          authRoutes.push(route);
+        }
+      });
+      this.routes = authRoutes;
+    } else {
+      this.navMenus = navigation;
+      this.routes = routes;
+    }
+  };
+
   signOut(e) {
     e.preventDefault();
     localStorage.removeItem("jwt-token-hris");
+    localStorage.removeItem("token-expired");
     this.props.history.push("/login");
   }
 
@@ -40,7 +72,7 @@ class DefaultLayout extends Component {
       <div className="app">
         <AppHeader fixed>
           <Suspense fallback={this.loading()}>
-            <DefaultHeader onLogout={e => this.signOut(e)} />
+            <DefaultHeader onLogout={(e) => this.signOut(e)} />
           </Suspense>
         </AppHeader>
         <div className="app-body">
@@ -49,7 +81,7 @@ class DefaultLayout extends Component {
             <AppSidebarForm />
             <Suspense>
               <AppSidebarNav
-                navConfig={navigation}
+                navConfig={this.navMenus}
                 {...this.props}
                 router={router}
               />
@@ -58,18 +90,18 @@ class DefaultLayout extends Component {
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
-            <AppBreadcrumb appRoutes={routes} router={router} />
+            <AppBreadcrumb appRoutes={this.routes} router={router} />
             <Container fluid>
               <Suspense fallback={this.loading()}>
                 <Switch>
-                  {routes.map((route, idx) => {
+                  {this.routes.map((route, idx) => {
                     return route.component ? (
                       <Route
                         key={idx}
                         path={route.path}
                         exact={route.exact}
                         name={route.name}
-                        render={props => <route.component {...props} />}
+                        render={(props) => <route.component {...props} />}
                       />
                     ) : null;
                   })}
