@@ -7,7 +7,8 @@ import {
   Param,
   Patch,
   HttpCode,
-  Delete
+  Delete,
+  Req
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ACGuard, UseRoles } from 'nest-access-control';
@@ -27,8 +28,8 @@ export class EmployeesController {
     possession: 'any',
     resource: 'employee'
   })
-  async getEmployees() {
-    return this.employeesService.getEmployees();
+  async getEmployees(@Req() req: any) {
+    return this.employeesService.getEmployees(req.user);
   }
 
   @Post()

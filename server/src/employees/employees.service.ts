@@ -16,8 +16,10 @@ export class EmployeesService {
     @InjectModel('User') private readonly UserModel: Model<User>
   ) {}
 
-  async getEmployees(): Promise<ResponseDto> {
-    const employees: Employee[] = await this.EmployeeModel.find()
+  async getEmployees(user: any): Promise<ResponseDto> {
+    const { company } = user;
+    const qryCompany = company ? { company } : null;
+    const employees: Employee[] = await this.EmployeeModel.find(qryCompany)
       .populate('company', 'name')
       .exec();
     if (!employees.length) {

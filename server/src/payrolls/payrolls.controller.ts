@@ -1,5 +1,13 @@
 /* eslint-disable no-empty-function */
-import { Controller, Get, Post, Body, UseGuards, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  Req
+} from '@nestjs/common';
 import { UseRoles, ACGuard } from 'nest-access-control';
 import { AuthGuard } from '@nestjs/passport';
 import { PayrollsService } from './payrolls.service';
@@ -16,8 +24,8 @@ export class PayrollsController {
     possession: 'any',
     resource: 'payroll'
   })
-  async getPayrolls() {
-    return this.payrollService.getPayrolls();
+  async getPayrolls(@Req() req: any) {
+    return this.payrollService.getPayrolls(req.user);
   }
 
   @Get(':payrollId')

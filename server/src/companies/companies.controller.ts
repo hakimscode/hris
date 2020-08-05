@@ -7,7 +7,8 @@ import {
   Patch,
   Delete,
   UseGuards,
-  HttpCode
+  HttpCode,
+  Req
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ACGuard, UseRoles } from 'nest-access-control';
@@ -27,8 +28,8 @@ export class CompaniesController {
     possession: 'any',
     resource: 'company'
   })
-  async getCompanies() {
-    return this.companiesService.getCompanies();
+  async getCompanies(@Req() req: any) {
+    return this.companiesService.getCompanies(req.user);
   }
 
   @Post()

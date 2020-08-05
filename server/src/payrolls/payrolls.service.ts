@@ -12,8 +12,10 @@ export class PayrollsService {
     @InjectModel('Payroll') private readonly PayrollModel: Model<Payroll>
   ) {}
 
-  async getPayrolls(): Promise<ResponseDto> {
-    const payrolls: Payroll[] = await this.PayrollModel.find()
+  async getPayrolls(user: any): Promise<ResponseDto> {
+    const { company } = user;
+    const qryCompany = company ? { company } : null;
+    const payrolls: Payroll[] = await this.PayrollModel.find(qryCompany)
       .populate({
         path: 'employee',
         select: ['profile.name', 'position.department'],

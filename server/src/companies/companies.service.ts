@@ -13,8 +13,12 @@ export class CompaniesService {
     @InjectModel('Company') private readonly CompanyModel: Model<Company>
   ) {}
 
-  async getCompanies(): Promise<ResponseDto> {
-    const companies: Company[] = await this.CompanyModel.find().exec();
+  async getCompanies(user: any): Promise<ResponseDto> {
+    const { company } = user;
+    const qryCompany = company ? { _id: company } : null;
+    const companies: Company[] = await this.CompanyModel.find(
+      qryCompany
+    ).exec();
 
     if (!companies.length) {
       const response = new ResponseDto(
