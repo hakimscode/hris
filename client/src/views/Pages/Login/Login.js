@@ -16,6 +16,8 @@ import {
 import Axios from "axios";
 import { compareAsc } from "date-fns";
 import JwtDecode from "jwt-decode";
+import { trackPromise } from "react-promise-tracker";
+import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
 class Login extends Component {
   constructor() {
@@ -38,18 +40,22 @@ class Login extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    Axios.post(process.env.REACT_APP_API_URL + "/auth/login", {
-      username: this.state.txt_username,
-      password: this.state.txt_password,
-    }).then((res) => {
-      if (res.status === 201 && res.data.access_token) {
-        const decodedToken = JwtDecode(res.data.access_token);
-        localStorage.setItem("jwt-token-hris", res.data.access_token);
-        localStorage.setItem("token-expired", decodedToken.exp.toString());
-        alert("Berhasil Login");
-        this.props.history.push("/");
-      }
-    });
+    trackPromise(
+      Axios.post(process.env.REACT_APP_API_URL + "/auth/login", {
+        username: this.state.txt_username,
+        password: this.state.txt_password,
+      })
+        .then((res) => {
+          if (res.status === 201 && res.data.access_token) {
+            const decodedToken = JwtDecode(res.data.access_token);
+            localStorage.setItem("jwt-token-hris", res.data.access_token);
+            localStorage.setItem("token-expired", decodedToken.exp.toString());
+            alert("Berhasil Login");
+            this.props.history.push("/");
+          }
+        })
+        .catch(() => alert("Login Gagal !"))
+    );
   };
 
   componentDidMount() {
@@ -70,6 +76,7 @@ class Login extends Component {
       <div className="app flex-row align-items-center">
         <Container>
           <Row className="justify-content-center">
+            <LoadingIndicator />
             <Col md="8">
               <CardGroup>
                 <Card className="p-4">
