@@ -181,9 +181,7 @@ class Bonuses extends Component {
                     bonus.componentName = res.data.data.componentName;
                     bonus.componentType = res.data.data.componentType;
                     bonus.amount = res.data.data.amount;
-                    bonus.decimalUnit = res.data.data.decimalUnit
-                      ? "rupiah"
-                      : "persen";
+                    bonus.decimalUnit = res.data.data.decimalUnit;
                     bonus.isAdders = res.data.data.isAdders;
                   }
                   return bonus;

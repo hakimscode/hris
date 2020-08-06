@@ -180,9 +180,7 @@ class Deductions extends Component {
                     deduction.componentName = res.data.data.componentName;
                     deduction.componentType = res.data.data.componentType;
                     deduction.amount = res.data.data.amount;
-                    deduction.decimalUnit = res.data.data.decimalUnit
-                      ? "rupiah"
-                      : "persen";
+                    deduction.decimalUnit = res.data.data.decimalUnit;
                     deduction.isAdders = res.data.data.isAdders;
                   }
                   return deduction;

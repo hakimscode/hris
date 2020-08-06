@@ -180,9 +180,7 @@ class Allowances extends Component {
                     allowance.componentName = res.data.data.componentName;
                     allowance.componentType = res.data.data.componentType;
                     allowance.amount = res.data.data.amount;
-                    allowance.decimalUnit = res.data.data.decimalUnit
-                      ? "rupiah"
-                      : "persen";
+                    allowance.decimalUnit = res.data.data.decimalUnit;
                     allowance.isAdders = res.data.data.isAdders;
                   }
                   return allowance;
