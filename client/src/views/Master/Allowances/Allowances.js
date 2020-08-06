@@ -14,6 +14,8 @@ import {
   Input,
 } from "reactstrap";
 import axios from "axios";
+import { trackPromise } from "react-promise-tracker";
+import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
 class Allowances extends Component {
   constructor(props) {
@@ -39,17 +41,19 @@ class Allowances extends Component {
   }
 
   componentDidMount() {
-    axios
-      .get(this.API_URL, {
-        params: { componentType: this.state.componentType },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        this.setState({ allowances: res.data.data });
-      })
-      .catch((err) => console.log(err));
+    trackPromise(
+      axios
+        .get(this.API_URL, {
+          params: { componentType: this.state.componentType },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({ allowances: res.data.data });
+        })
+        .catch((err) => console.log(err))
+    );
   }
 
   handleChange = (e) => {
@@ -60,22 +64,24 @@ class Allowances extends Component {
 
   actionStatus = (allowanceId) => {
     if (allowanceId !== "") {
-      axios
-        .get(this.API_URL + "/" + allowanceId, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-          },
-        })
-        .then((res) => {
-          this.setState({
-            selectedId: allowanceId,
-            componentName: res.data.data.componentName,
-            amount: res.data.data.amount,
-            decimalUnit: res.data.data.decimalUnit ? "rupiah" : "persen",
-            actionSubmit: "Edit",
-          });
-        })
-        .catch((err) => console.log(err));
+      trackPromise(
+        axios
+          .get(this.API_URL + "/" + allowanceId, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          })
+          .then((res) => {
+            this.setState({
+              selectedId: allowanceId,
+              componentName: res.data.data.componentName,
+              amount: res.data.data.amount,
+              decimalUnit: res.data.data.decimalUnit ? "rupiah" : "persen",
+              actionSubmit: "Edit",
+            });
+          })
+          .catch((err) => console.log(err))
+      );
     } else {
       this.resetForm();
     }
@@ -83,22 +89,24 @@ class Allowances extends Component {
 
   hapusClick = (allowanceId) => {
     if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios
-        .delete(this.API_URL + "/" + allowanceId, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-          },
-        })
-        .then(() => {
-          this.setState({
-            allowances: [
-              ...this.state.allowances.filter(
-                (allowance) => allowance._id !== allowanceId
-              ),
-            ],
-          });
-        })
-        .catch((err) => console.log(err));
+      trackPromise(
+        axios
+          .delete(this.API_URL + "/" + allowanceId, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          })
+          .then(() => {
+            this.setState({
+              allowances: [
+                ...this.state.allowances.filter(
+                  (allowance) => allowance._id !== allowanceId
+                ),
+              ],
+            });
+          })
+          .catch((err) => console.log(err))
+      );
     }
   };
 
@@ -115,80 +123,86 @@ class Allowances extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     if (this.state.selectedId === "") {
-      axios
-        .post(
-          this.API_URL,
-          {
-            componentName: this.state.componentName,
-            componentType: this.state.componentType,
-            amount: parseInt(this.state.amount),
-            decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
-            isAdders: this.state.isAdders,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+      trackPromise(
+        axios
+          .post(
+            this.API_URL,
+            {
+              componentName: this.state.componentName,
+              componentType: this.state.componentType,
+              amount: parseInt(this.state.amount),
+              decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
+              isAdders: this.state.isAdders,
             },
-          }
-        )
-        .then((res) => {
-          if (res.status === 201) {
-            this.setState({
-              allowances: [...this.state.allowances, res.data.data],
-            });
-            this.resetForm();
-          } else {
-            console.log("error");
-          }
-        })
-        .catch((err) => {
-          console.log(err.message);
-          console.log(this.state);
-        });
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                  "jwt-token-hris"
+                )}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 201) {
+              this.setState({
+                allowances: [...this.state.allowances, res.data.data],
+              });
+              this.resetForm();
+            } else {
+              console.log("error");
+            }
+          })
+          .catch((err) => console.log(err))
+      );
     } else {
-      axios
-        .patch(
-          this.API_URL + "/" + this.state.selectedId,
-          {
-            componentName: this.state.componentName,
-            amount: parseInt(this.state.amount),
-            decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+      trackPromise(
+        axios
+          .patch(
+            this.API_URL + "/" + this.state.selectedId,
+            {
+              componentName: this.state.componentName,
+              amount: parseInt(this.state.amount),
+              decimalUnit: this.state.decimalUnit === "rupiah" ? true : false,
             },
-          }
-        )
-        .then((res) => {
-          if (res.status === 202) {
-            this.setState({
-              allowances: this.state.allowances.map((allowance) => {
-                if (allowance._id === res.data.data._id) {
-                  allowance.componentName = res.data.data.componentName;
-                  allowance.componentType = res.data.data.componentType;
-                  allowance.amount = res.data.data.amount;
-                  allowance.decimalUnit = res.data.data.decimalUnit
-                    ? "rupiah"
-                    : "persen";
-                  allowance.isAdders = res.data.data.isAdders;
-                }
-                return allowance;
-              }),
-            });
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                  "jwt-token-hris"
+                )}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 202) {
+              this.setState({
+                allowances: this.state.allowances.map((allowance) => {
+                  if (allowance._id === res.data.data._id) {
+                    allowance.componentName = res.data.data.componentName;
+                    allowance.componentType = res.data.data.componentType;
+                    allowance.amount = res.data.data.amount;
+                    allowance.decimalUnit = res.data.data.decimalUnit
+                      ? "rupiah"
+                      : "persen";
+                    allowance.isAdders = res.data.data.isAdders;
+                  }
+                  return allowance;
+                }),
+              });
 
-            this.resetForm();
-          } else {
-            console.log("error");
-          }
-        })
-        .catch((err) => console.log(err));
+              this.resetForm();
+            } else {
+              console.log("error");
+            }
+          })
+          .catch((err) => console.log(err))
+      );
     }
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <LoadingIndicator />
         <Row>
           <Col xs="12" lg="12">
             <Card>
