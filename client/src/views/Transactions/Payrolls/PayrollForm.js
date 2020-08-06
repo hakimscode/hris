@@ -17,6 +17,8 @@ import {
 } from "reactstrap";
 import axios from "axios";
 import currencyFormat from "../../../shared/currencyFormat";
+import { trackPromise } from "react-promise-tracker";
+import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
 class PayrollForm extends Component {
   constructor(props) {
@@ -56,16 +58,18 @@ class PayrollForm extends Component {
   }
 
   componentDidMount() {
-    axios
-      .get(this.API_URL_EMPLOYEES, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        this.setState({ employees: res.data.data });
-      })
-      .catch((err) => console.log(err));
+    trackPromise(
+      axios
+        .get(this.API_URL_EMPLOYEES, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({ employees: res.data.data });
+        })
+        .catch((err) => console.log(err))
+    );
   }
 
   handleChange = (e) => {
@@ -97,77 +101,82 @@ class PayrollForm extends Component {
 
   getEmployee = (employeeId) => {
     if (employeeId !== "") {
+      trackPromise(
+        axios
+          .get(this.API_URL_EMPLOYEES + "/" + employeeId, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              const { profile, salary, company, position } = res.data.data;
+              const defaultSalary = [
+                { name: "Gaji Utama", amount: salary.primarySalary },
+                {
+                  name: "Uang Harian",
+                  amount: salary.dailyAllowance * this.state.workingDays,
+                },
+              ];
+
+              this.setState({
+                selectedEmployee: {
+                  name: profile.name,
+                  companyName: company.name,
+                  department: position.department,
+                  role: position.role,
+                  primarySalary: salary.primarySalary,
+                  dailyAllowance: salary.dailyAllowance,
+                },
+                benefitSalary: defaultSalary,
+              });
+
+              this.listSalaryComponents();
+            }
+          })
+          .catch((err) => console.log(err))
+      );
+    }
+  };
+
+  listSalaryComponents = () => {
+    trackPromise(
       axios
-        .get(this.API_URL_EMPLOYEES + "/" + employeeId, {
+        .get(this.API_URL_SALARY_COMPONENTS, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
           },
         })
         .then((res) => {
-          if (res.status === 200) {
-            const { profile, salary, company, position } = res.data.data;
-            const defaultSalary = [
-              { name: "Gaji Utama", amount: salary.primarySalary },
-              {
-                name: "Uang Harian",
-                amount: salary.dailyAllowance * this.state.workingDays,
-              },
-            ];
+          const salaryComponents = res.data.data;
 
-            this.setState({
-              selectedEmployee: {
-                name: profile.name,
-                companyName: company.name,
-                department: position.department,
-                role: position.role,
-                primarySalary: salary.primarySalary,
-                dailyAllowance: salary.dailyAllowance,
-              },
-              benefitSalary: defaultSalary,
-            });
+          salaryComponents.forEach((salaryComponent) => {
+            let { componentName, amount } = salaryComponent;
 
-            this.listSalaryComponents();
-          }
+            if (!salaryComponent.decimalUnit) {
+              amount =
+                (amount / 100) * this.state.selectedEmployee.primarySalary;
+            }
+
+            const newComponent = {
+              name: componentName,
+              amount,
+            };
+            if (salaryComponent.isAdders) {
+              this.setState({
+                benefitSalary: [...this.state.benefitSalary, newComponent],
+              });
+            } else {
+              this.setState({
+                cutSalary: [...this.state.cutSalary, newComponent],
+              });
+            }
+          });
+
+          this.netSalary();
         })
-        .catch((err) => console.log(err));
-    }
-  };
-
-  listSalaryComponents = () => {
-    axios
-      .get(this.API_URL_SALARY_COMPONENTS, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        const salaryComponents = res.data.data;
-
-        salaryComponents.forEach((salaryComponent) => {
-          let { componentName, amount } = salaryComponent;
-
-          if (!salaryComponent.decimalUnit) {
-            amount = (amount / 100) * this.state.selectedEmployee.primarySalary;
-          }
-
-          const newComponent = {
-            name: componentName,
-            amount,
-          };
-          if (salaryComponent.isAdders) {
-            this.setState({
-              benefitSalary: [...this.state.benefitSalary, newComponent],
-            });
-          } else {
-            this.setState({
-              cutSalary: [...this.state.cutSalary, newComponent],
-            });
-          }
-        });
-
-        this.netSalary();
-      })
-      .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+    );
   };
 
   netSalary = () => {
@@ -206,36 +215,39 @@ class PayrollForm extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { employee, period, date, benefitSalary, cutSalary } = this.state;
-    axios
-      .post(
-        this.API_URL,
-        {
-          employee,
-          period,
-          date,
-          benefitSalary,
-          cutSalary,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+    trackPromise(
+      axios
+        .post(
+          this.API_URL,
+          {
+            employee,
+            period,
+            date,
+            benefitSalary,
+            cutSalary,
           },
-        }
-      )
-      .then((res) => {
-        if (res.status === 201) {
-          alert("Data berhasil disimpan");
-          this.props.history.push("/transactions/payrolls");
-        } else {
-          console.log("error");
-        }
-      })
-      .catch((err) => console.log(err));
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 201) {
+            alert("Data berhasil disimpan");
+            this.props.history.push("/transactions/payrolls");
+          } else {
+            console.log("error");
+          }
+        })
+        .catch((err) => console.log(err))
+    );
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <LoadingIndicator />
         <Row>
           <Col xs="12" lg="12">
             <Card>
