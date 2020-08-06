@@ -14,6 +14,8 @@ import {
   Input,
 } from "reactstrap";
 import axios from "axios";
+import { trackPromise } from "react-promise-tracker";
+import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
 class Companies extends Component {
   constructor(props) {
@@ -37,16 +39,18 @@ class Companies extends Component {
   }
 
   componentDidMount() {
-    axios
-      .get(this.API_URL, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        this.setState({ companies: res.data.data });
-      })
-      .catch((err) => console.log(err));
+    trackPromise(
+      axios
+        .get(this.API_URL, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({ companies: res.data.data });
+        })
+        .catch((err) => console.log(err))
+    );
   }
 
   handleChange = (e) => {
@@ -57,21 +61,23 @@ class Companies extends Component {
 
   actionStatus = (companyId) => {
     if (companyId !== "") {
-      axios
-        .get(this.API_URL + "/" + companyId, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-          },
-        })
-        .then((res) => {
-          this.setState({
-            selectedId: companyId,
-            name: res.data.data.name,
-            field: res.data.data.field,
-            address: res.data.data.address,
-          });
-        })
-        .catch((err) => console.log(err));
+      trackPromise(
+        axios
+          .get(this.API_URL + "/" + companyId, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          })
+          .then((res) => {
+            this.setState({
+              selectedId: companyId,
+              name: res.data.data.name,
+              field: res.data.data.field,
+              address: res.data.data.address,
+            });
+          })
+          .catch((err) => console.log(err))
+      );
     } else {
       this.resetForm();
     }
@@ -79,22 +85,24 @@ class Companies extends Component {
 
   hapusClick = (companyId) => {
     if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios
-        .delete(this.API_URL + "/" + companyId, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-          },
-        })
-        .then(() => {
-          this.setState({
-            companies: [
-              ...this.state.companies.filter(
-                (company) => company._id !== companyId
-              ),
-            ],
-          });
-        })
-        .catch((err) => console.log(err));
+      trackPromise(
+        axios
+          .delete(this.API_URL + "/" + companyId, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          })
+          .then(() => {
+            this.setState({
+              companies: [
+                ...this.state.companies.filter(
+                  (company) => company._id !== companyId
+                ),
+              ],
+            });
+          })
+          .catch((err) => console.log(err))
+      );
     }
   };
 
@@ -111,74 +119,80 @@ class Companies extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     if (this.state.selectedId === "") {
-      axios
-        .post(
-          this.API_URL,
-          {
-            name: this.state.name,
-            field: this.state.field,
-            address: this.state.address,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+      trackPromise(
+        axios
+          .post(
+            this.API_URL,
+            {
+              name: this.state.name,
+              field: this.state.field,
+              address: this.state.address,
             },
-          }
-        )
-        .then((res) => {
-          if (res.status === 201) {
-            this.setState({
-              companies: [...this.state.companies, res.data.data],
-            });
-            this.resetForm();
-          } else {
-            console.log("error");
-          }
-        })
-        .catch((err) => {
-          console.log(err.message);
-          console.log(this.state);
-        });
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                  "jwt-token-hris"
+                )}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 201) {
+              this.setState({
+                companies: [...this.state.companies, res.data.data],
+              });
+              this.resetForm();
+            } else {
+              console.log("error");
+            }
+          })
+          .catch((err) => console.log(err))
+      );
     } else {
-      axios
-        .patch(
-          this.API_URL + "/" + this.state.selectedId,
-          {
-            name: this.state.name,
-            field: this.state.field,
-            address: this.state.address,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+      trackPromise(
+        axios
+          .patch(
+            this.API_URL + "/" + this.state.selectedId,
+            {
+              name: this.state.name,
+              field: this.state.field,
+              address: this.state.address,
             },
-          }
-        )
-        .then((res) => {
-          if (res.status === 202) {
-            this.setState({
-              companies: this.state.companies.map((company) => {
-                if (company._id === res.data.data._id) {
-                  company.name = res.data.data.name;
-                  company.field = res.data.data.field;
-                  company.address = res.data.data.address;
-                }
-                return company;
-              }),
-            });
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                  "jwt-token-hris"
+                )}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 202) {
+              this.setState({
+                companies: this.state.companies.map((company) => {
+                  if (company._id === res.data.data._id) {
+                    company.name = res.data.data.name;
+                    company.field = res.data.data.field;
+                    company.address = res.data.data.address;
+                  }
+                  return company;
+                }),
+              });
 
-            this.resetForm();
-          } else {
-            console.log("error");
-          }
-        })
-        .catch((err) => console.log(err));
+              this.resetForm();
+            } else {
+              console.log("error");
+            }
+          })
+          .catch((err) => console.log(err))
+      );
     }
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <LoadingIndicator />
         <Row>
           <Col xs="12" lg="12">
             <Card>
