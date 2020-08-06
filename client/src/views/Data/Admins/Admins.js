@@ -14,6 +14,8 @@ import {
   Input,
 } from "reactstrap";
 import axios from "axios";
+import { trackPromise } from "react-promise-tracker";
+import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
 class Admins extends Component {
   constructor(props) {
@@ -40,27 +42,31 @@ class Admins extends Component {
   }
 
   componentDidMount() {
-    axios
-      .get(this.API_URL_ADMINS + "/admins", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        this.setState({ admins: res.data.data });
-      })
-      .catch((err) => console.log(err));
+    trackPromise(
+      axios
+        .get(this.API_URL_ADMINS + "/admins", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({ admins: res.data.data });
+        })
+        .catch((err) => console.log(err))
+    );
 
-    axios
-      .get(this.API_URL_COMPANIES, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        this.setState({ companies: res.data.data });
-      })
-      .catch((err) => console.log(err));
+    trackPromise(
+      axios
+        .get(this.API_URL_COMPANIES, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({ companies: res.data.data });
+        })
+        .catch((err) => console.log(err))
+    );
   }
 
   handleChange = (e) => {
@@ -71,20 +77,22 @@ class Admins extends Component {
 
   hapusClick = (adminId) => {
     if (window.confirm("Anda yakin ingin menghapus data ini?")) {
-      axios
-        .delete(this.API_URL_ADMINS + "/" + adminId, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-          },
-        })
-        .then(() => {
-          this.setState({
-            admins: [
-              ...this.state.admins.filter((admin) => admin._id !== adminId),
-            ],
-          });
-        })
-        .catch((err) => console.log(err));
+      trackPromise(
+        axios
+          .delete(this.API_URL_ADMINS + "/" + adminId, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          })
+          .then(() => {
+            this.setState({
+              admins: [
+                ...this.state.admins.filter((admin) => admin._id !== adminId),
+              ],
+            });
+          })
+          .catch((err) => console.log(err))
+      );
     }
   };
 
@@ -102,40 +110,43 @@ class Admins extends Component {
     e.preventDefault();
     const { username, password, userRole, company } = this.state;
     if (this.state.selectedId === "") {
-      axios
-        .post(
-          this.API_URL_ADMINS,
-          {
-            username,
-            password,
-            userRole,
-            company,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+      trackPromise(
+        axios
+          .post(
+            this.API_URL_ADMINS,
+            {
+              username,
+              password,
+              userRole,
+              company,
             },
-          }
-        )
-        .then((res) => {
-          if (res.status === 201) {
-            this.setState({
-              admins: [...this.state.admins, res.data.data],
-            });
-            this.resetForm();
-          } else {
-            console.log("error");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                  "jwt-token-hris"
+                )}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 201) {
+              this.setState({
+                admins: [...this.state.admins, res.data.data],
+              });
+              this.resetForm();
+            } else {
+              console.log("error");
+            }
+          })
+          .catch((err) => console.log(err))
+      );
     }
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <LoadingIndicator />
         <Row>
           <Col xs="12" lg="12">
             <Card>
