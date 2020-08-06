@@ -13,6 +13,8 @@ import {
   Input,
 } from "reactstrap";
 import axios from "axios";
+import { trackPromise } from "react-promise-tracker";
+import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
 class EmployeeForm extends Component {
   constructor(props) {
@@ -47,67 +49,71 @@ class EmployeeForm extends Component {
   }
 
   componentDidMount() {
-    axios
-      .get(this.API_URL_COMPANIES, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        this.setState({ companies: res.data.data });
-      })
-      .catch((err) => console.log(err));
-
-    const url = this.props.match.url;
-    if (url.includes("edit")) {
-      const employeeId = this.props.match.params.employeeId;
-
+    trackPromise(
       axios
-        .get(this.API_URL + "/" + employeeId, {
+        .get(this.API_URL_COMPANIES, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
           },
         })
         .then((res) => {
-          const company = res.data.data.company._id;
-          const {
-            idCardNumber,
-            name,
-            address,
-            gender,
-            placeOfBirth,
-            dateOfBirth,
-            maritalStatus,
-          } = res.data.data.profile;
-          const { phoneNumber, email } = res.data.data.contact;
-          const { department, role } = res.data.data.position;
-          const { primarySalary, dailyAllowance } = res.data.data.salary;
-
-          this.setState({
-            employeeId,
-
-            company,
-            idNumber: idCardNumber,
-            name,
-            address,
-            gender,
-            placeOfBirth,
-            dateOfBirth,
-            maritalStatus,
-            phoneNumber,
-            email,
-            department,
-            role,
-            primarySalary,
-            dailyAllowance,
-            actionSubmit: "Edit",
-          });
+          this.setState({ companies: res.data.data });
         })
-        .catch((err) => {
-          console.log(err);
-          alert("Data tidak ada");
-          this.props.history.push("/data/employees");
-        });
+        .catch((err) => console.log(err))
+    );
+
+    const url = this.props.match.url;
+    if (url.includes("edit")) {
+      const employeeId = this.props.match.params.employeeId;
+
+      trackPromise(
+        axios
+          .get(this.API_URL + "/" + employeeId, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          })
+          .then((res) => {
+            const company = res.data.data.company._id;
+            const {
+              idCardNumber,
+              name,
+              address,
+              gender,
+              placeOfBirth,
+              dateOfBirth,
+              maritalStatus,
+            } = res.data.data.profile;
+            const { phoneNumber, email } = res.data.data.contact;
+            const { department, role } = res.data.data.position;
+            const { primarySalary, dailyAllowance } = res.data.data.salary;
+
+            this.setState({
+              employeeId,
+
+              company,
+              idNumber: idCardNumber,
+              name,
+              address,
+              gender,
+              placeOfBirth,
+              dateOfBirth,
+              maritalStatus,
+              phoneNumber,
+              email,
+              department,
+              role,
+              primarySalary,
+              dailyAllowance,
+              actionSubmit: "Edit",
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+            alert("Data tidak ada");
+            this.props.history.push("/data/employees");
+          })
+      );
     }
   }
 
@@ -159,85 +165,94 @@ class EmployeeForm extends Component {
     const userLogin = arrName[0];
 
     if (this.state.actionSubmit === "Simpan") {
-      axios
-        .post(
-          this.API_URL,
-          {
-            company,
-            idCardNumber: idNumber,
-            name,
-            address,
-            gender,
-            placeOfBirth,
-            dateOfBirth,
-            maritalStatus,
-            phoneNumber,
-            email,
-            department,
-            role,
-            primarySalary: parseInt(primarySalary),
-            dailyAllowance: parseInt(dailyAllowance),
-            username: `employee_${userLogin}`,
-            password: `employee_${userLogin}`,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+      trackPromise(
+        axios
+          .post(
+            this.API_URL,
+            {
+              company,
+              idCardNumber: idNumber,
+              name,
+              address,
+              gender,
+              placeOfBirth,
+              dateOfBirth,
+              maritalStatus,
+              phoneNumber,
+              email,
+              department,
+              role,
+              primarySalary: parseInt(primarySalary),
+              dailyAllowance: parseInt(dailyAllowance),
+              username: `employee_${userLogin}`,
+              password: `employee_${userLogin}`,
             },
-          }
-        )
-        .then((res) => {
-          if (res.status === 201) {
-            alert("Data berhasil disimpan");
-            this.props.history.push("/data/employees");
-          } else {
-            console.log("error");
-          }
-        })
-        .catch((err) => console.log(err));
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                  "jwt-token-hris"
+                )}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 201) {
+              alert("Data berhasil disimpan");
+              this.props.history.push("/data/employees");
+            } else {
+              console.log("error");
+            }
+          })
+          .catch((err) => console.log(err))
+      );
     } else {
-      axios
-        .patch(
-          this.API_URL + "/" + this.state.employeeId,
-          {
-            company,
-            idCardNumber: idNumber,
-            name,
-            address,
-            gender,
-            placeOfBirth,
-            dateOfBirth,
-            maritalStatus,
-            phoneNumber,
-            email,
-            department,
-            role,
-            primarySalary: parseInt(primarySalary),
-            dailyAllowance: parseInt(dailyAllowance),
-            username: `employee_${userLogin}`,
-            password: `employee_${userLogin}`,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+      trackPromise(
+        axios
+          .patch(
+            this.API_URL + "/" + this.state.employeeId,
+            {
+              company,
+              idCardNumber: idNumber,
+              name,
+              address,
+              gender,
+              placeOfBirth,
+              dateOfBirth,
+              maritalStatus,
+              phoneNumber,
+              email,
+              department,
+              role,
+              primarySalary: parseInt(primarySalary),
+              dailyAllowance: parseInt(dailyAllowance),
+              username: `employee_${userLogin}`,
+              password: `employee_${userLogin}`,
             },
-          }
-        )
-        .then((res) => {
-          if (res.status === 202) {
-            alert("Data berhasil diedit");
-            this.props.history.push("/data/employees");
-          } else {
-            console.log("error");
-          }
-        })
-        .catch((err) => console.log(err));
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem(
+                  "jwt-token-hris"
+                )}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res.status === 202) {
+              alert("Data berhasil diedit");
+              this.props.history.push("/data/employees");
+            } else {
+              console.log("error");
+            }
+          })
+          .catch((err) => console.log(err))
+      );
     }
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <LoadingIndicator />
         <Row>
           <Col xs="12" lg="12">
             <Card>

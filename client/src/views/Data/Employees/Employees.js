@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { trackPromise } from "react-promise-tracker";
+import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
 class Employees extends Component {
   constructor(props) {
@@ -16,21 +18,24 @@ class Employees extends Component {
   }
 
   componentDidMount() {
-    axios
-      .get(this.API_URL, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        this.setState({ employees: res.data.data });
-      })
-      .catch((err) => console.log(err));
+    trackPromise(
+      axios
+        .get(this.API_URL, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+          },
+        })
+        .then((res) => {
+          this.setState({ employees: res.data.data });
+        })
+        .catch((err) => console.log(err))
+    );
   }
 
   render() {
     return (
       <div className="animated fadeIn">
+        <LoadingIndicator />
         <Row>
           <Col xs="12" lg="12">
             <Card>

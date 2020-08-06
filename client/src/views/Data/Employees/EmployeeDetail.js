@@ -12,6 +12,8 @@ import {
 import axios from "axios";
 import { Link } from "react-router-dom";
 import currencyFormat from "../../../shared/currencyFormat";
+import { trackPromise } from "react-promise-tracker";
+import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
 class EmployeeDetail extends Component {
   constructor(props) {
@@ -42,70 +44,75 @@ class EmployeeDetail extends Component {
   componentDidMount() {
     const employeeId = this.employeeId;
 
-    axios
-      .get(this.API_URL + "/" + employeeId, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
-        },
-      })
-      .then((res) => {
-        const company = res.data.data.company;
-        const {
-          idCardNumber,
-          name,
-          address,
-          gender,
-          placeOfBirth,
-          dateOfBirth,
-          maritalStatus,
-        } = res.data.data.profile;
-        const { phoneNumber, email } = res.data.data.contact;
-        const { department, role } = res.data.data.position;
-        const { primarySalary, dailyAllowance } = res.data.data.salary;
-
-        this.setState({
-          company,
-          idNumber: idCardNumber,
-          name,
-          address,
-          gender,
-          placeOfBirth,
-          dateOfBirth,
-          maritalStatus,
-          phoneNumber,
-          email,
-          department,
-          role,
-          primarySalary,
-          dailyAllowance,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        alert("Data tidak ada");
-        this.props.history.push("/data/employees");
-      });
-  }
-
-  hapusClick = (employeeId) => {
-    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
+    trackPromise(
       axios
-        .delete(this.API_URL + "/" + employeeId, {
+        .get(this.API_URL + "/" + employeeId, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
           },
         })
-        .then(() => {
-          alert("Data berhasil dihapus");
+        .then((res) => {
+          const company = res.data.data.company;
+          const {
+            idCardNumber,
+            name,
+            address,
+            gender,
+            placeOfBirth,
+            dateOfBirth,
+            maritalStatus,
+          } = res.data.data.profile;
+          const { phoneNumber, email } = res.data.data.contact;
+          const { department, role } = res.data.data.position;
+          const { primarySalary, dailyAllowance } = res.data.data.salary;
+
+          this.setState({
+            company,
+            idNumber: idCardNumber,
+            name,
+            address,
+            gender,
+            placeOfBirth,
+            dateOfBirth,
+            maritalStatus,
+            phoneNumber,
+            email,
+            department,
+            role,
+            primarySalary,
+            dailyAllowance,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("Data tidak ada");
           this.props.history.push("/data/employees");
         })
-        .catch((err) => console.log(err));
+    );
+  }
+
+  hapusClick = (employeeId) => {
+    if (window.confirm("Anda yakin ingin menghapus data ini?")) {
+      trackPromise(
+        axios
+          .delete(this.API_URL + "/" + employeeId, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt-token-hris")}`,
+            },
+          })
+          .then(() => {
+            alert("Data berhasil dihapus");
+            this.props.history.push("/data/employees");
+          })
+          .catch((err) => console.log(err))
+      );
     }
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <LoadingIndicator />
         <Row>
           <Col xs="12" lg="12">
             <Card>
