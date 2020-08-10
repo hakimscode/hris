@@ -180,7 +180,7 @@ class Admins extends Component {
                         />
                       </Col>
                       <Col xs="4" md="4">
-                        <Label htmlFor="company">Perusahaan</Label>
+                        <Label htmlFor="company">Cabang</Label>
                         <Input
                           type="select"
                           name="company"
@@ -188,7 +188,7 @@ class Admins extends Component {
                           value={this.state.company}
                           required
                         >
-                          <option value="">-- pilih perusahaan --</option>
+                          <option value="">-- pilih cabang --</option>
                           {this.state.companies.map((company) => (
                             <option key={company._id} value={company._id}>
                               {company.name}
@@ -221,7 +221,7 @@ class Admins extends Component {
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Nama Perusahaan</th>
+                      <th>Nama Cabang</th>
                       <th>Username</th>
                       <th>#</th>
                     </tr>

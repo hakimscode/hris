@@ -138,7 +138,7 @@ class EmployeeDetail extends Component {
                   <Col xs="6" lg="6">
                     <ListGroup>
                       <ListGroupItem>
-                        Perusahaan : <strong>{this.state.company.name}</strong>
+                        Cabang : <strong>{this.state.company.name}</strong>
                       </ListGroupItem>
                       <ListGroupItem>
                         NIK : <strong>{this.state.idNumber}</strong>

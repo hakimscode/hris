@@ -17,7 +17,7 @@ import axios from "axios";
 import { trackPromise } from "react-promise-tracker";
 import LoadingIndicator from "../../Widgets/LoadingIndicator";
 
-class Companies extends Component {
+class Branches extends Component {
   constructor(props) {
     super(props);
 
@@ -197,32 +197,32 @@ class Companies extends Component {
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Form Perusahaan
+                <i className="fa fa-align-justify"></i> Form Cabang
               </CardHeader>
               <Form onSubmit={this.handleSubmit} className="form-horizontal">
                 <CardBody>
                   <FormGroup>
                     <Row>
                       <Col xs="6" md="6">
-                        <Label htmlFor="company-name">Nama Perusahaan</Label>
+                        <Label htmlFor="company-name">Nama Cabang</Label>
                         <Input
                           type="text"
                           name="name"
                           onChange={this.handleChange}
                           value={this.state.name}
                           required
-                          placeholder="Nama Perusahaan"
+                          placeholder="Nama Cabang"
                         />
                       </Col>
                       <Col xs="6" md="6">
-                        <Label htmlFor="field">Jenis Perusahaan</Label>
+                        <Label htmlFor="field">Level Cabang</Label>
                         <Input
                           type="text"
                           name="field"
                           onChange={this.handleChange}
                           value={this.state.field}
                           required
-                          placeholder="Jumlah"
+                          placeholder="Level Cabang"
                         />
                       </Col>
                     </Row>
@@ -263,15 +263,15 @@ class Companies extends Component {
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Data Perusahaan
+                <i className="fa fa-align-justify"></i> Data Cabang
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Nama Perusahaan</th>
-                      <th>Jenis</th>
+                      <th>Nama Cabang</th>
+                      <th>Level</th>
                       <th>Alamat</th>
                       <th>#</th>
                     </tr>
@@ -314,4 +314,4 @@ class Companies extends Component {
   }
 }
 
-export default Companies;
+export default Branches;

@@ -33,8 +33,8 @@ export default {
       name: "Data",
     },
     {
-      name: "Perusahaan",
-      url: "/data/companies",
+      name: "Cabang",
+      url: "/data/branches",
       icon: "icon-badge",
     },
     {

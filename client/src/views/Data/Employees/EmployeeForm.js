@@ -402,7 +402,7 @@ class EmployeeForm extends Component {
                   <Row>
                     <Col xs="6" md="6">
                       <FormGroup>
-                        <Label htmlFor="employee-name">Perusahaan</Label>
+                        <Label htmlFor="employee-name">Cabang</Label>
                         <Input
                           type="select"
                           name="company"
@@ -410,7 +410,7 @@ class EmployeeForm extends Component {
                           value={this.state.company}
                           required
                         >
-                          <option value="">-- pilih perusahaan --</option>
+                          <option value="">-- pilih cabang --</option>
                           {this.state.companies.map((company) => (
                             <option key={company._id} value={company._id}>
                               {company.name}

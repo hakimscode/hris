@@ -23,7 +23,7 @@ class Dashboard extends Component {
             <h5>
               <i>Human Resources System Information</i>
             </h5>
-            <h1>Universitas Ubudiyah Indonesia</h1>
+            <h1>UB ONTV Ubudiyah Indonesia</h1>
             <hr />
           </Col>
         </Row>

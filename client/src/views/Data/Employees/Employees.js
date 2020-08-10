@@ -53,7 +53,7 @@ class Employees extends Component {
                   <thead>
                     <tr>
                       <th>No</th>
-                      <th>Perusahaan</th>
+                      <th>Cabang</th>
                       <th>Nama Pegawai</th>
                       <th>Departemen</th>
                       <th>Jabatan</th>

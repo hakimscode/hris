@@ -73,7 +73,7 @@ class Payrolls extends Component {
                       <th>No</th>
                       <th>Periode</th>
                       <th>Tanggal</th>
-                      <th>Perusahaan</th>
+                      <th>Cabang</th>
                       <th>Departemen</th>
                       <th>Pegawai</th>
                       <th>Total Gaji</th>

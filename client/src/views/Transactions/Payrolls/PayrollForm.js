@@ -334,7 +334,7 @@ class PayrollForm extends Component {
                     <Col xs="6" lg="6">
                       <ListGroup>
                         <ListGroupItem>
-                          Perusahaan :{" "}
+                          Cabang :{" "}
                           <strong>
                             {this.state.selectedEmployee.companyName}
                           </strong>

@@ -132,7 +132,7 @@ class Login extends Component {
                     <div>
                       <h2>Human Resource Information System</h2>
                       <p>
-                        Pengelola informasi karyawan pada yayasan Ubudiyah
+                        Pengelola informasi karyawan pada UB ONTV Ubudiyah
                         Indonesia
                       </p>
                     </div>

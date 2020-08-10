@@ -27,7 +27,7 @@ class PayrollSlip extends Component {
           <Col xs="6" lg="6">
             <ListGroup>
               <ListGroupItem>
-                Perusahaan :{" "}
+                Cabang :{" "}
                 <strong>{this.props.data.employee.company.name}</strong>
               </ListGroupItem>
               <ListGroupItem>
