@@ -1,41 +1,42 @@
 version: "3.7"
 
-networks:
-  hris_network:
-    name: hris_network
-
 services:
+  nginx:
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: hris_nginx
+    ports:
+      - "4001:80"
+
   hris_db:
     image: mongo:4.2.8
     container_name: hris_db
     restart: always
     ports:
       - "27018:27017"
-    networks:
-      - hris_network
 
   hris_server:
     build:
       context: ./server
       dockerfile: Dockerfile
     container_name: hris_server
-    ports:
-      - "5002:5001"
-    environment:
+    env_file:
       - .env
     depends_on:
       - hris_db
-    networks:
-      - hris_network
+    volumes:
+      - /usr/app/node_modules
+      - ./server:/usr/app
 
   hris_client:
     build:
       context: ./client
       dockerfile: Dockerfile
     container_name: hris_client
-    ports:
-      - "3001:3000"
-    environment:
+    env_file:
       - .env
-    networks:
-      - hris_network
+    volumes:
+      - /usr/app/node_modules
+      - ./client:/usr/app
