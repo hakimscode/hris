@@ -27,8 +27,8 @@ services:
     depends_on:
       - hris_db
     volumes:
-      - /usr/app/node_modules
-      - ./server:/usr/app
+      - /app/node_modules
+      - ./server:/app
 
   hris_client:
     build:
@@ -38,5 +38,5 @@ services:
     env_file:
       - .env
     volumes:
-      - /usr/app/node_modules
-      - ./client:/usr/app
+      - /app/node_modules
+      - ./client:/app
