@@ -1,7 +1,6 @@
 {
-    "name": "Payrolls",
-    "version": "0.0.0",
-    "private": true,
-    "main": "./Typography.js"
-  }
-  
+  "name": "Payrolls",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Payrolls.js"
+}
