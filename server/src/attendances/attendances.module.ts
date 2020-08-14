@@ -7,10 +7,10 @@ import { AttendancesController } from './attendances.controller';
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'Attendance', schema: AttendanceSchema }
-    ])
+      { name: 'Attendance', schema: AttendanceSchema },
+    ]),
   ],
   providers: [AttendancesService],
-  controllers: [AttendancesController]
+  controllers: [AttendancesController],
 })
 export class AttendancesModule {}

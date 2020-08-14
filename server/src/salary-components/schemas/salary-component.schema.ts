@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { SalaryComponentEnum } from 'src/shared/enums';
+import { SalaryComponentEnum } from '../../shared/enums';
 
 export const SalaryComponentSchema = new mongoose.Schema({
   componentName: String,
@@ -8,10 +8,10 @@ export const SalaryComponentSchema = new mongoose.Schema({
     enum: [
       SalaryComponentEnum.Allowance,
       SalaryComponentEnum.Bonus,
-      SalaryComponentEnum.Deduction
-    ]
+      SalaryComponentEnum.Deduction,
+    ],
   },
   amount: Number,
   decimalUnit: Boolean,
-  isAdders: Boolean
+  isAdders: Boolean,
 });
