@@ -5,7 +5,7 @@ services:
     restart: always
     build:
       context: ./nginx
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: hris_nginx
     ports:
       - "4001:80"
@@ -20,7 +20,7 @@ services:
   hris_server:
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: hris_server
     env_file:
       - .env
@@ -33,7 +33,7 @@ services:
   hris_client:
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: hris_client
     env_file:
       - .env
