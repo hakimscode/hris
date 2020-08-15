@@ -3,7 +3,6 @@ services:
   - docker
 
 before_install:
-  - pwd && ls -a
   - docker build -t herihakim/server-test -f ./server/Dockerfile.dev .
   - docker build -t herihakim/client-test -f ./client/Dockerfile.dev .
 
