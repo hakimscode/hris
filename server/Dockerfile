@@ -2,7 +2,7 @@ FROM node:lts-alpine
 
 WORKDIR /app
 
-COPY ./package.json ./
+COPY package.json ./
 
 RUN npm install
 
@@ -10,7 +10,7 @@ COPY . .
 
 RUN npm run build
 
-WORKDIR ./dist
+WORKDIR dist
 
 EXPOSE 5001
 
