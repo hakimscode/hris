@@ -9,6 +9,8 @@ services:
     container_name: hris_nginx
     ports:
       - "4001:80"
+    networks:
+      - hris_network
 
   hris_db:
     image: mongo:4.2.8
@@ -16,6 +18,12 @@ services:
     restart: always
     ports:
       - "27018:27017"
+    volumes:
+      - type: volume
+        source: hris_db_volume
+        target: /data/db
+    networks:
+      - hris_network
 
   hris_server:
     build:
@@ -27,16 +35,38 @@ services:
     depends_on:
       - hris_db
     volumes:
-      - /app/node_modules
-      - ./server:/app
+      - type: volume
+        source: hris_server_volume
+        target: /app/node_modules
+      - type: bind
+        source: ./server
+        target: /app
+    networks:
+      - hris_network
 
   hris_client:
     build:
       context: ./client
       dockerfile: Dockerfile.dev
     container_name: hris_client
+    stdin_open: true
     env_file:
       - .env
     volumes:
-      - /app/node_modules
-      - ./client:/app
+      - type: volume
+        source: hris_client_volume
+        target: /app/node_modules
+      - type: bind
+        source: ./client
+        target: /app
+    networks:
+      - hris_network
+  
+volumes:
+  hris_db_volume:
+  hris_server_volume:
+  hris_client_volume:
+
+networks: 
+  hris_network:
+    name: hris_network
